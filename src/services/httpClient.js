@@ -84,20 +84,54 @@ export const interpolate = (template, params = {}) => {
  */
 const request = async (path, options = {}) => {
   const url = `${_baseUrl}${path}`;
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      ...buildHeaders(),
-      ...(options.headers || {}),
-    },
-  });
+  let response;
+  
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+  try {
+    response = await fetch(url, {
+      cache: 'no-store',
+      ...options,
+      signal: controller.signal,
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+        ...buildHeaders(),
+        ...(options.headers || {}),
+      },
+    });
+    clearTimeout(timeoutId);
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      throw new Error('Network error: Request timed out (15s). Ensure the server is running.');
+    }
+    // Network errors (e.g. CORS, connection refused)
+    throw new Error(error.message || 'Network error: Failed to connect to server');
+  }
 
   // Handle 204 No Content (e.g. DELETE responses)
   if (response.status === 204) {
     return null;
   }
 
-  const data = await response.json();
+  let data = null;
+  const contentType = response.headers.get('content-type');
+  
+  try {
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      // If it's not JSON, read it as text so we don't throw a SyntaxError
+      const text = await response.text();
+      data = { message: response.ok ? text : `Server returned ${response.status} (${response.statusText})` };
+    }
+  } catch (error) {
+    // Fallback if parsing fails unexpectedly
+    data = { message: `Failed to parse response: ${error.message}` };
+  }
 
   if (!response.ok) {
     const errorMessage =

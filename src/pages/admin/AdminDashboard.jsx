@@ -23,7 +23,7 @@ export default function AdminDashboard() {
   if (loading) return <div className="p-6">Loading dashboard...</div>;
 
   return (
-    <div className="p-6 w-full max-w-[1600px] mx-auto flex flex-col gap-8">
+    <div className="p-6 w-full max-w-none mx-auto flex flex-col gap-8">
       {/* Page Header */}
       <div className="pb-6 border-b border-border bg-gradient-to-b from-blue-50/30 to-transparent -mx-6 px-6 pt-4">
         <h1 className="font-serif text-2xl font-semibold text-gray-900">Admin Dashboard</h1>

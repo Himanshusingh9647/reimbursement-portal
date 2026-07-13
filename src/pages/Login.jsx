@@ -46,12 +46,12 @@ export default function Login() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <FormField
             id="ghrId"
-            label="GHR ID"
+            label="Username"
             type="text"
             value={ghrId}
             onChange={(e) => setGhrId(e.target.value)}
             required
-            placeholder="e.g. 40261873"
+            placeholder="e.g. emp001"
           />
 
           <FormField

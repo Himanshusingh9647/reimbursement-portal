@@ -5,6 +5,7 @@ import { createTravelPreApproval, getRequestsByEmployee, saveDraftRequest, getRe
 import { getDomesticCityTiers, getIntlCountryTiers, getRateConfig } from '../../services/rateConfig';
 import FormField from '../../components/shared/FormField';
 import Select from '../../components/shared/Select';
+import Combobox from '../../components/shared/Combobox';
 import UploadZone from '../../components/shared/UploadZone';
 import Toast from '../../components/shared/Toast';
 import { Info, PlaneTakeoff, Clock, CheckCircle } from 'lucide-react';
@@ -104,14 +105,9 @@ export default function PreApproval() {
 
   const handleSaveDraft = async () => {
     try {
-      await saveDraftRequest({
-        draftId,
-        ghrId: user.ghrId,
-        type: 'travel',
-        draftData: { formData, step }
-      });
-      setToast({ visible: true, message: 'Saved as draft', type: 'success' });
-      navigate('/requests');
+      const draft = { formData, step };
+      localStorage.setItem(`draft_travel_${draftId || 'new'}`, JSON.stringify(draft));
+      navigate('/requests', { state: { toastMessage: 'Saved as draft', toastType: 'success' } });
     } catch (err) {
       setToast({ visible: true, message: 'Failed to save draft: ' + err.message, type: 'error' });
     }
@@ -119,6 +115,7 @@ export default function PreApproval() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
     try {
       await createTravelPreApproval({
@@ -127,9 +124,11 @@ export default function PreApproval() {
         ...formData
       });
       setToast({ visible: true, message: 'Pre-Approval submitted successfully', type: 'success' });
+      localStorage.removeItem(`draft_travel_${draftId || 'new'}`);
       setTimeout(() => navigate('/requests'), 1500);
     } catch (err) {
-      setToast({ visible: true, message: err.message, type: 'error' });
+      setToast({ visible: true, message: err.message || 'Something went wrong, please try again', type: 'error' });
+    } finally {
       setLoading(false);
     }
   };
@@ -236,7 +235,7 @@ export default function PreApproval() {
   }, [formData.startDate, formData.endDate, policyRates, selectedTierInfo, formData.subtype]);
 
   return (
-    <div className="p-6 w-full max-w-[1600px] mx-auto flex flex-col gap-6">
+    <div className="p-6 w-full max-w-none mx-auto flex flex-col gap-6">
       <button 
         onClick={() => navigate('/new-request')}
         className="text-samsung-blue text-sm font-medium hover:underline bg-transparent border-none p-0 cursor-pointer w-max focus:outline-none"
@@ -249,16 +248,15 @@ export default function PreApproval() {
         <p className="text-sm font-mono tracking-wide uppercase text-gray-500 mt-1">Step {step} of 2: {step === 1 ? 'Obtain approval before traveling' : 'Review Submission'}</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="flex flex-col lg:flex-row gap-8 items-start">
         
         {/* Left Column: Form */}
-        <div className="lg:col-span-8 xl:col-span-9 bg-white rounded-lg shadow-sm border-t-4 border-samsung-blue border-l border-r border-b border-border">
+        <div className="flex-1 min-w-0 xl:col-span-9 bg-white rounded-lg shadow-sm border-t-4 border-samsung-blue border-l border-r border-b border-border">
           <div className="px-6 md:px-8 py-5 border-b border-border flex justify-between items-center bg-gray-50/50">
-            <h2 className="text-base font-semibold text-gray-900 m-0">Request Details</h2>
-            <span className="text-xs font-mono uppercase tracking-wide text-gray-400">Draft auto-saved</span>
+            <h2 className="text-base font-semibold text-gray-900 m-0">Pre-Approval Form</h2>
           </div>
           
-          <form onSubmit={e => { e.preventDefault(); if (step === 1) setStep(2); else handleSubmit(e); }} className="p-6 md:p-8 max-w-4xl">
+          <form onSubmit={e => { e.preventDefault(); if (step === 1) setStep(2); else handleSubmit(e); }} className="p-6 md:p-8 w-full">
             {step === 1 && (
               <div className="flex flex-col gap-6">
                 
@@ -292,12 +290,13 @@ export default function PreApproval() {
                   <FormField id="endDate" label="End Date" type="date" value={formData.endDate} onChange={e => setFormData({...formData, endDate: e.target.value})} required />
                 </div>
 
-                <Select 
+                <Combobox 
                   id="destination" 
                   label="Destination" 
                   options={activeDestinations} 
                   value={formData.destination} 
                   onChange={e => setFormData({...formData, destination: e.target.value})} 
+                  placeholder="Select a destination..."
                   required 
                 />
 
@@ -310,7 +309,7 @@ export default function PreApproval() {
                   required 
                 />
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
                   <UploadZone 
                     id="knoxApproval" 
                     label="Knox Approval" 
@@ -392,7 +391,7 @@ export default function PreApproval() {
               </div>
             )}
             
-            <div className="mt-8 pt-6 border-t border-border flex justify-between items-center">
+            <div className="mt-6 pt-6 border-t border-border flex justify-between items-center">
               {step === 1 ? (
                 <>
                   <button type="button" onClick={() => navigate('/new-request')} className="text-gray-600 hover:text-gray-900 font-medium text-sm">Cancel</button>
@@ -423,7 +422,7 @@ export default function PreApproval() {
         </div>
 
         {/* Right Column: Contextual Info */}
-        <div className="lg:col-span-4 xl:col-span-3 flex flex-col gap-6 sticky top-6">
+        <div className="w-full lg:w-[360px] shrink-0 xl:col-span-3 flex flex-col gap-6 sticky top-6">
           <div className="bg-white p-6 rounded-lg border border-border shadow-sm">
             <h3 className="text-base font-semibold flex items-center gap-2 mb-5 text-gray-900">
               <Info size={18} className="text-samsung-blue" /> What you'll need

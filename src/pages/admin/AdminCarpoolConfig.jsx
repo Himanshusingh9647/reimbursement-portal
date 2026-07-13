@@ -59,7 +59,7 @@ export default function AdminCarpoolConfig() {
   ];
 
   return (
-    <div className="p-6 w-full max-w-[1600px] mx-auto flex flex-col gap-6">
+    <div className="p-6 w-full max-w-none mx-auto flex flex-col gap-6">
       <div className="pb-4 border-b border-border bg-gradient-to-b from-blue-50/30 to-transparent -mx-6 px-6 pt-2 mb-2">
         <h1 className="font-serif text-2xl font-semibold text-gray-900">Carpool Configuration</h1>
       </div>

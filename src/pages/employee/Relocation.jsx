@@ -89,7 +89,7 @@ export default function Relocation() {
   };
 
   return (
-    <div className="p-6 w-full max-w-[1600px] mx-auto flex flex-col gap-6">
+    <div className="p-6 w-full max-w-none mx-auto flex flex-col gap-6">
       <button 
         onClick={() => navigate('/new-request')}
         className="text-samsung-blue text-sm font-medium hover:underline bg-transparent border-none p-0 cursor-pointer w-max focus:outline-none"
@@ -102,10 +102,10 @@ export default function Relocation() {
         <p className="text-sm font-mono tracking-wide uppercase text-gray-500 mt-1">Submit your relocation expenses for reimbursement</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="flex flex-col lg:flex-row gap-8 items-start">
         
         {/* Left Column: Form */}
-        <div className="lg:col-span-8 xl:col-span-9 bg-white rounded-lg shadow-sm border-t-4 border-samsung-blue border-l border-r border-b border-border">
+        <div className="flex-1 min-w-0 xl:col-span-9 bg-white rounded-lg shadow-sm border-t-4 border-samsung-blue border-l border-r border-b border-border">
           <div className="px-6 md:px-8 py-5 border-b border-border flex justify-between items-center bg-gray-50/50">
             <h2 className="text-base font-semibold text-gray-900 m-0">Relocation Details</h2>
             <span className="text-xs font-mono uppercase tracking-wide text-gray-400">Draft auto-saved</span>
@@ -165,7 +165,7 @@ export default function Relocation() {
         </div>
 
         {/* Right Column: Contextual Info */}
-        <div className="lg:col-span-4 xl:col-span-3 flex flex-col gap-6 sticky top-6">
+        <div className="w-full lg:w-[360px] shrink-0 xl:col-span-3 flex flex-col gap-6 sticky top-6">
           <div className="bg-white p-6 rounded-lg border border-border shadow-sm">
             <h3 className="text-base font-semibold flex items-center gap-2 mb-4 text-gray-900">
               <Info size={18} className="text-samsung-blue" /> Policy Highlights

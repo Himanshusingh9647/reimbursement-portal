@@ -5,7 +5,7 @@ import { getRequestsByEmployee } from '../../services/requests';
 import { getRateConfig, getIntlCountryTiers } from '../../services/rateConfig';
 import DataTable from '../../components/shared/DataTable';
 import Badge from '../../components/shared/Badge';
-import { FileText, AlertCircle, Plus, Activity, TrendingUp, CreditCard, Clock, Plane, Wifi, Car, Truck, Shield, CheckCircle } from 'lucide-react';
+import { FileText, AlertCircle, Plus, Activity, TrendingUp, CreditCard, Clock, Plane, Wifi, Car, Truck, Shield, CheckCircle, Building2, Globe } from 'lucide-react';
 import { formatDate } from '../../utils/formatters';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,6 +17,7 @@ export default function Dashboard() {
   const [recentActivity, setRecentActivity] = useState([]);
   const [policyRates, setPolicyRates] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     async function loadDashboard() {
@@ -86,6 +87,7 @@ export default function Dashboard() {
 
       } catch (err) {
         console.error("Failed to load dashboard data", err);
+        setError(err.message || "Failed to load dashboard data");
       } finally {
         setLoading(false);
       }
@@ -98,6 +100,23 @@ export default function Dashboard() {
 
   if (loading) {
     return <div className="p-6">Loading dashboard...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <div className="bg-red-50 text-red-700 p-4 rounded-md mb-4 flex items-center gap-2">
+          <AlertCircle size={20} />
+          <span>{error}</span>
+        </div>
+        <button 
+          onClick={() => window.location.reload()} 
+          className="px-4 py-2 bg-samsung-blue text-white rounded-md hover:bg-blue-700 transition-colors"
+        >
+          Try Again
+        </button>
+      </div>
+    );
   }
 
   const columns = [
@@ -164,7 +183,7 @@ export default function Dashboard() {
   const totalApproved = spendCategories.reduce((acc, curr) => acc + curr.approved, 0);
 
   return (
-    <div className="p-6 w-full max-w-[1600px] mx-auto flex flex-col gap-8">
+    <div className="p-6 w-full max-w-none mx-auto flex flex-col gap-8">
       {/* Page Header */}
       <div className="pb-6 border-b border-border bg-gradient-to-b from-blue-50/30 to-transparent -mx-6 px-6 pt-4 flex justify-between items-end">
         <div>
@@ -202,9 +221,9 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="flex flex-col lg:flex-row gap-8">
         {/* Main Content Column */}
-        <div className="lg:col-span-8 flex flex-col gap-8">
+        <div className="flex-1 min-w-0 flex flex-col gap-8">
           
           {/* Recent Requests */}
           <div>
@@ -242,68 +261,10 @@ export default function Dashboard() {
               </p>
             )}
           </div>
-
-          {/* Spend Summary */}
-          <div>
-            <h2 className="font-serif text-xl font-medium text-gray-900 pb-2 mb-4 border-b border-border flex items-center gap-2">
-              <TrendingUp size={20} className="text-gray-400" /> Spend Summary (YTD)
-            </h2>
-            <div className="bg-white p-6 rounded-lg border border-border shadow-sm flex flex-col gap-6">
-              <div className="flex justify-between items-end mb-2">
-                <div>
-                  <div className="text-xs font-mono uppercase tracking-wide text-gray-500 mb-1">Total Approved YTD</div>
-                  <div className="text-3xl font-serif font-semibold text-gray-900">₹{totalApproved.toLocaleString('en-IN')}</div>
-                </div>
-                <div className="text-right">
-                  <div className="text-xs font-mono uppercase tracking-wide text-gray-500 mb-1">Total Claimed YTD</div>
-                  <div className="text-lg font-medium text-gray-500">₹{totalClaimed.toLocaleString('en-IN')}</div>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-4">
-                {spendCategories.map(cat => {
-                  let cap = null;
-                  let capLabel = "No Cap";
-                  if (cat.label === 'Internet' && policyRates?.internet) { cap = policyRates.internet * 12; capLabel = `₹${cap.toLocaleString('en-IN')} cap`; }
-                  else if (cat.label === 'Carpool' && policyRates?.carpool) { cap = policyRates.carpool * 250; capLabel = `₹${cap.toLocaleString('en-IN')} cap`; }
-                  else if (cat.label === 'Relocation' && policyRates?.relocationBase) { cap = policyRates.relocationBase; capLabel = `₹${cap.toLocaleString('en-IN')} cap`; }
-                  
-                  const percentage = cap ? Math.min((cat.approved / cap) * 100, 100) : (cat.approved > 0 ? 100 : 0);
-
-                  return (
-                    <div key={cat.label} className={cat.claimed === 0 ? 'opacity-40' : ''}>
-                      <div className="flex justify-between text-sm mb-1.5">
-                        <span className="font-medium text-gray-700">{cat.label}</span>
-                        <span className="font-mono text-gray-600">₹{cat.approved.toLocaleString('en-IN')} / {capLabel}</span>
-                      </div>
-                      <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
-                        <div 
-                          className={`h-2.5 rounded-full ${cat.color}`} 
-                          style={{ width: `${percentage}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          </div>
-
         </div>
 
         {/* Right Rail Column */}
-        <div className="lg:col-span-4 flex flex-col gap-8">
-          
-          {/* Reminders */}
-          <div>
-            <h2 className="font-serif text-xl font-medium text-gray-900 pb-2 mb-4 border-b border-border flex items-center gap-2">
-              <Clock size={20} className="text-gray-400" /> Reminders
-            </h2>
-            <div className="bg-gray-50 p-5 rounded-lg border border-border flex items-center gap-3">
-              <CheckCircle size={18} className="text-status-approved" />
-              <span className="text-sm text-gray-600">No pending drafts or reminders. You're all caught up!</span>
-            </div>
-          </div>
+        <div className="w-full lg:w-[360px] shrink-0 flex flex-col gap-8">
 
           {/* Expanded Policy Quick Reference */}
           <div>
@@ -325,14 +286,14 @@ export default function Dashboard() {
                 </div>
                 <div className="px-5 py-3 flex items-start justify-between hover:bg-gray-50 transition-colors">
                   <div className="flex items-center gap-2 text-gray-700">
-                    <Plane size={16} className="text-gray-400 opacity-0" />
+                    <Building2 size={16} className="text-samsung-blue" />
                     <span>Domestic Hotel (Tier A+)</span>
                   </div>
                   <span className="font-mono font-medium text-gray-900">{policyRates?.hotelCap === null ? 'Actuals' : `₹${policyRates?.hotelCap ?? '-'} / night`}</span>
                 </div>
                 <div className="px-5 py-3 flex items-start justify-between hover:bg-gray-50 transition-colors">
                   <div className="flex items-center gap-2 text-gray-700">
-                    <Plane size={16} className="text-gray-400 opacity-0" />
+                    <Globe size={16} className="text-samsung-blue" />
                     <span>International Flight</span>
                   </div>
                   <span className="font-mono font-medium text-gray-500 uppercase tracking-wide text-xs">Actuals</span>

@@ -48,7 +48,7 @@ export default function ViewRequest() {
   };
 
   return (
-    <div className="p-6 w-full max-w-[1600px] mx-auto flex flex-col gap-6">
+    <div className="p-6 w-full max-w-none mx-auto flex flex-col gap-6">
       <button 
         onClick={() => navigate('/requests')}
         className="text-samsung-blue text-sm font-medium hover:underline bg-transparent border-none p-0 cursor-pointer w-max focus:outline-none"

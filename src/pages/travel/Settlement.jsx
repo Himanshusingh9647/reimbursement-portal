@@ -154,7 +154,7 @@ export default function Settlement() {
   }, [request, policyRates]);
 
   return (
-    <div className="p-6 w-full max-w-[1600px] mx-auto flex flex-col gap-6">
+    <div className="p-6 w-full max-w-none mx-auto flex flex-col gap-6">
       <button 
         onClick={() => navigate(`/requests/${id}`)}
         className="text-samsung-blue text-sm font-medium hover:underline bg-transparent border-none p-0 cursor-pointer w-max focus:outline-none"
@@ -167,16 +167,16 @@ export default function Settlement() {
         <p className="text-sm font-mono tracking-wide uppercase text-gray-500 mt-1">Step {step} of 2: {step === 1 ? 'Provide Details' : 'Review Claim'}</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="flex flex-col lg:flex-row gap-8 items-start">
         
         {/* Left Column: Form */}
-        <div className="lg:col-span-8 xl:col-span-9 bg-white rounded-lg shadow-sm border-t-4 border-samsung-blue border-l border-r border-b border-border">
+        <div className="flex-1 min-w-0 xl:col-span-9 bg-white rounded-lg shadow-sm border-t-4 border-samsung-blue border-l border-r border-b border-border">
           <div className="px-6 md:px-8 py-5 border-b border-border flex justify-between items-center bg-gray-50/50">
             <h2 className="text-base font-semibold text-gray-900 m-0">Settlement Details</h2>
             <span className="text-xs font-mono uppercase tracking-wide text-gray-400">Draft auto-saved</span>
           </div>
 
-          <div className="p-6 md:p-8 max-w-4xl">
+          <div className="p-6 md:p-8 w-full">
             {step === 1 && (
               <form onSubmit={handleNext}>
                 <div className="flex flex-col gap-6">
@@ -244,7 +244,7 @@ export default function Settlement() {
 
                 </div>
                 
-                <div className="mt-8 pt-6 border-t border-border flex justify-between items-center">
+                <div className="mt-6 pt-6 border-t border-border flex justify-between items-center">
                   <button type="button" onClick={handleSaveDraft} className="text-samsung-blue hover:text-blue-800 font-medium text-sm focus:outline-none">Save Draft</button>
                   <button type="submit" className="bg-samsung-blue text-white px-6 py-2.5 rounded-md font-medium text-sm hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-samsung-blue">
                     Review Claim & Next
@@ -280,7 +280,7 @@ export default function Settlement() {
                   Per diem and hotel caps will be computed automatically by the system upon submission. Once submitted, this claim cannot be edited.
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-border flex justify-between items-center">
+                <div className="mt-6 pt-6 border-t border-border flex justify-between items-center">
                   <button type="button" onClick={() => setStep(1)} className="text-gray-600 hover:text-gray-900 font-medium text-sm">← Back to Edit</button>
                   <button onClick={handleSubmit} disabled={submitting} className="bg-samsung-blue text-white px-6 py-2.5 rounded-md font-medium text-sm hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-samsung-blue disabled:opacity-70 disabled:cursor-not-allowed">
                     {submitting ? 'Submitting...' : 'Confirm & Submit'}
@@ -292,7 +292,7 @@ export default function Settlement() {
         </div>
 
         {/* Right Column: Contextual Info */}
-        <div className="lg:col-span-4 xl:col-span-3 flex flex-col gap-6 sticky top-6">
+        <div className="w-full lg:w-[360px] shrink-0 xl:col-span-3 flex flex-col gap-6 sticky top-6">
           
           {tripSummary && (
             <div className="bg-white p-6 rounded-lg border border-border shadow-sm">

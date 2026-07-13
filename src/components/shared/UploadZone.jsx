@@ -1,5 +1,6 @@
 import React, { useRef, useState, useCallback } from 'react';
-import { Upload, File, X } from 'lucide-react';
+import { Upload, File, X, Eye } from 'lucide-react';
+import FilePreviewModal from './FilePreviewModal';
 
 export default function UploadZone({
   label,
@@ -12,6 +13,7 @@ export default function UploadZone({
 }) {
   const inputRef = useRef(null);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [previewFile, setPreviewFile] = useState(null);
 
   const handleFiles = useCallback(
     (newFiles) => {
@@ -86,37 +88,40 @@ export default function UploadZone({
         {required && <span className="text-status-rejected" aria-hidden="true">*</span>}
       </label>
 
-      <div
-        className={`relative flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg bg-gray-50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-samsung-blue focus:ring-offset-2 ${
-          isDragOver ? 'border-samsung-blue bg-blue-50/50' : 'border-border hover:border-gray-400 hover:bg-gray-100/50'
-        } ${files.length > 0 ? 'py-6' : ''}`}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onClick={handleClick}
-        onKeyDown={handleKeyDown}
-        role="button"
-        tabIndex={0}
-        aria-label={`${label}. Click or drag files to upload.`}
-      >
-        {files.length === 0 && (
-          <>
-            <Upload className="text-gray-400 mb-3" size={24} aria-hidden="true" />
-            <p className="text-sm text-gray-700 mb-1">
-              <span className="font-semibold text-samsung-blue">Click to upload</span> or drag and drop
-            </p>
-            <p className="font-mono text-[10px] uppercase tracking-wide text-gray-500">
-              Accepted formats: {accept.replace(/\./g, '').toUpperCase().replace(/,/g, ', ')}
-            </p>
-          </>
-        )}
+      {/* Only show dropzone if empty, OR if multiple is allowed */}
+      {(!files.length || multiple) && (
+        <div
+          className={`relative flex flex-col items-center justify-center p-3 border-2 border-dashed rounded-lg bg-gray-50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-samsung-blue focus:ring-offset-2 ${
+            isDragOver ? 'border-samsung-blue bg-blue-50/50' : 'border-border hover:border-gray-400 hover:bg-gray-100/50'
+          } ${files.length > 0 ? 'py-3' : ''}`}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onClick={handleClick}
+          onKeyDown={handleKeyDown}
+          role="button"
+          tabIndex={0}
+          aria-label={`${label}. Click or drag files to upload.`}
+        >
+          {files.length === 0 && (
+            <>
+              <Upload className="text-gray-400 mb-2" size={20} aria-hidden="true" />
+              <p className="text-xs text-gray-700 mb-1">
+                <span className="font-semibold text-samsung-blue">Click to upload</span> or drag and drop
+              </p>
+              <p className="font-mono text-[9px] uppercase tracking-wide text-gray-500">
+                Accepted formats: {accept.replace(/\./g, '').toUpperCase().replace(/,/g, ', ')}
+              </p>
+            </>
+          )}
 
-        {files.length > 0 && (
-          <p className="text-sm text-gray-700">
-            <span className="font-semibold text-samsung-blue">Click to add more files</span> or drag and drop
-          </p>
-        )}
-      </div>
+          {files.length > 0 && (
+            <p className="text-sm text-gray-700">
+              <span className="font-semibold text-samsung-blue">Click to add more files</span> or drag and drop
+            </p>
+          )}
+        </div>
+      )}
 
       <input
         ref={inputRef}
@@ -135,33 +140,51 @@ export default function UploadZone({
         <div className="flex flex-col gap-2 mt-2" role="list" aria-label="Uploaded files">
           {files.map((file, index) => (
             <div 
-              className="flex items-center justify-between p-3 border border-border rounded-md bg-white shadow-sm" 
+              className="flex items-center justify-between p-3 border border-border rounded-md bg-white shadow-sm hover:border-blue-300 transition-colors cursor-pointer group" 
               key={`${file.name}-${index}`} 
               role="listitem"
+              onClick={() => setPreviewFile(file)}
             >
               <div className="flex items-center gap-3 overflow-hidden">
-                <div className="w-8 h-8 flex-shrink-0 bg-blue-50 text-samsung-blue rounded flex items-center justify-center">
+                <div className="w-8 h-8 flex-shrink-0 bg-blue-50 text-samsung-blue rounded flex items-center justify-center group-hover:bg-blue-100 transition-colors">
                   <File size={16} aria-hidden="true" />
                 </div>
                 <div className="flex flex-col overflow-hidden">
-                  <span className="text-sm font-medium text-gray-900 truncate" title={file.name}>{file.name}</span>
+                  <span className="text-sm font-medium text-gray-900 truncate group-hover:text-samsung-blue transition-colors" title={file.name}>{file.name}</span>
                   <span className="font-mono text-[10px] uppercase tracking-wide text-gray-500">{formatSize(file.size)}</span>
                 </div>
               </div>
-              <button
-                type="button"
-                className="flex-shrink-0 p-1.5 text-gray-400 hover:text-status-rejected hover:bg-red-50 rounded-md"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleRemove(index);
-                }}
-                aria-label={`Remove ${file.name}`}
-              >
-                <X size={16} />
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  className="flex-shrink-0 p-1.5 text-gray-400 hover:text-samsung-blue hover:bg-blue-50 rounded-md"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setPreviewFile(file);
+                  }}
+                  aria-label={`Preview ${file.name}`}
+                >
+                  <Eye size={16} />
+                </button>
+                <button
+                  type="button"
+                  className="flex-shrink-0 p-1.5 text-gray-400 hover:text-status-rejected hover:bg-red-50 rounded-md"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemove(index);
+                  }}
+                  aria-label={`Remove ${file.name}`}
+                >
+                  <X size={16} />
+                </button>
+              </div>
             </div>
           ))}
         </div>
+      )}
+
+      {previewFile && (
+        <FilePreviewModal file={previewFile} onClose={() => setPreviewFile(null)} />
       )}
     </div>
   );

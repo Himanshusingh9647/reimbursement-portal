@@ -44,21 +44,19 @@ export default function Toast({ message, type = 'info', isVisible, onClose }) {
 
   const ariaRole = type === 'error' ? 'alert' : 'status';
   
-  let colorClass = 'bg-blue-50 text-blue-800 border-blue-200';
+  let colorClass = 'bg-white text-gray-900 border-gray-200';
   let iconColor = 'text-blue-500';
   
   if (type === 'success') {
-    colorClass = 'bg-green-50 text-green-800 border-green-200';
-    iconColor = 'text-green-500';
+    iconColor = 'text-status-approved';
   } else if (type === 'error') {
-    colorClass = 'bg-red-50 text-red-800 border-red-200';
-    iconColor = 'text-red-500';
+    iconColor = 'text-status-rejected';
   }
 
   return (
     <div className="fixed bottom-4 right-4 z-50">
       <div
-        className={`flex items-start gap-3 p-4 border rounded-md shadow-md ${colorClass} max-w-sm w-full`}
+        className={`flex items-start gap-3 p-4 border rounded-md ${colorClass} max-w-sm w-full`}
         role={ariaRole}
         aria-live={type === 'error' ? 'assertive' : 'polite'}
         onMouseEnter={handleMouseEnter}
@@ -70,7 +68,7 @@ export default function Toast({ message, type = 'info', isVisible, onClose }) {
         </div>
         <button
           type="button"
-          className={`flex-shrink-0 rounded-md p-0.5 opacity-70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-${colorClass.split(' ')[0].replace('bg-', '')} focus:ring-${iconColor.split('-')[1]}-500`}
+          className="flex-shrink-0 rounded-md p-0.5 text-gray-400 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200"
           onClick={onClose}
           aria-label="Dismiss notification"
         >

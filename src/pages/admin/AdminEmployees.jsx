@@ -103,7 +103,7 @@ export default function AdminEmployees() {
   if (loading && employees.length === 0) return <div className="p-6">Loading employees...</div>;
 
   return (
-    <div className="p-6 w-full max-w-[1600px] mx-auto flex flex-col gap-6">
+    <div className="p-6 w-full max-w-none mx-auto flex flex-col gap-6">
       <div className="pb-4 border-b border-border bg-gradient-to-b from-blue-50/30 to-transparent -mx-6 px-6 pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-serif text-2xl font-semibold text-gray-900">Employee Management</h1>

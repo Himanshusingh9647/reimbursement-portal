@@ -79,15 +79,15 @@ export default function NewRequest() {
   ];
 
   return (
-    <div className="p-6 w-full max-w-[1600px] mx-auto flex flex-col gap-6">
+    <div className="p-6 w-full max-w-none mx-auto flex flex-col gap-6">
       <div className="pb-4 border-b border-border bg-gradient-to-b from-blue-50/30 to-transparent -mx-6 px-6 pt-2 mb-2">
         <h1 className="font-serif text-2xl font-semibold text-gray-900">New Reimbursement Request</h1>
         <p className="text-sm font-mono tracking-wide uppercase text-gray-500 mt-1">Select the type of expense you are claiming</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="flex flex-col lg:flex-row gap-8 items-start">
         {/* Left Column: Request Types */}
-        <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="flex-1 min-w-0 grid grid-cols-1 md:grid-cols-2 gap-6">
           {requestTypes.map(type => (
             <Link
               key={type.id}
@@ -110,49 +110,11 @@ export default function NewRequest() {
             </Link>
           ))}
 
-          {/* Policy Quick Reference (Full Width under cards) */}
-          {policyRates && (
-            <div className="col-span-1 md:col-span-2 mt-4 bg-white rounded-lg border border-border shadow-sm overflow-hidden">
-              <div className="bg-gray-50 px-6 py-4 border-b border-border flex items-center gap-2">
-                <Shield size={18} className="text-samsung-blue" />
-                <h3 className="text-sm font-semibold text-gray-900 m-0">Policy Quick Reference ({user.clLevel || 'CL3'})</h3>
-              </div>
-              <div className="p-0">
-                <table className="w-full text-sm text-left">
-                  <tbody className="divide-y divide-gray-100">
-                    <tr className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-3.5 font-medium text-gray-700 w-1/2">Domestic Per Diem</td>
-                      <td className="px-6 py-3.5 font-mono text-gray-900 w-1/2">₹{policyRates.perDiem} / day</td>
-                    </tr>
-                    <tr className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-3.5 font-medium text-gray-700 w-1/2">Domestic Hotel (Tier A+)</td>
-                      <td className="px-6 py-3.5 font-mono text-gray-900 w-1/2">{policyRates.hotelCap === null ? 'Actuals' : `₹${policyRates.hotelCap} / night`}</td>
-                    </tr>
-                    <tr className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-3.5 font-medium text-gray-700 w-1/2">International Flight</td>
-                      <td className="px-6 py-3.5 font-mono text-gray-500 uppercase tracking-wide text-xs w-1/2">Actuals</td>
-                    </tr>
-                    <tr className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-3.5 font-medium text-gray-700 w-1/2">Internet Monthly Cap</td>
-                      <td className="px-6 py-3.5 font-mono text-gray-900 w-1/2">₹{policyRates.internet}</td>
-                    </tr>
-                    <tr className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-3.5 font-medium text-gray-700 w-1/2">Carpool Daily Cap</td>
-                      <td className="px-6 py-3.5 font-mono text-gray-900 w-1/2">₹{policyRates.carpool}</td>
-                    </tr>
-                    <tr className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-3.5 font-medium text-gray-700 w-1/2">Relocation Base</td>
-                      <td className="px-6 py-3.5 font-mono text-gray-900 w-1/2">₹{policyRates.relocationBase.toLocaleString('en-IN')}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
+
         </div>
 
         {/* Right Column: Reimbursement Guidelines */}
-        <div className="lg:col-span-4 bg-gray-50 p-6 md:p-8 rounded-lg border border-border">
+        <div className="w-full lg:w-[360px] shrink-0 bg-gray-50 p-6 md:p-8 rounded-lg border border-border">
           <h2 className="font-serif text-xl font-medium text-gray-900 pb-2 mb-6 border-b border-border flex items-center gap-2">
             <HelpCircle size={20} className="text-samsung-blue" /> Reimbursement Guidelines
           </h2>
