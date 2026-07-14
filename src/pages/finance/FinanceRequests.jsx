@@ -48,14 +48,14 @@ export default function FinanceRequests() {
   return (
     <div className="p-6 w-full max-w-none mx-auto flex flex-col gap-8">
       {/* Page Header */}
-      <div className="pb-6 border-b border-border bg-gradient-to-b from-blue-50/30 to-transparent -mx-6 px-6 pt-4 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+      <div className="pb-6 border-b border-border bg-gradient-to-b from-blue-50/30 dark:from-blue-900/20 to-transparent -mx-6 px-6 pt-4 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h1 className="font-serif text-2xl font-semibold text-gray-900">All Requests</h1>
-          <p className="text-sm font-mono tracking-wide uppercase text-gray-500 mt-1">View and manage all employee requests across the organization</p>
+          <h1 className="font-serif text-2xl font-semibold text-gray-900 dark:text-white">All Requests</h1>
+          <p className="text-sm font-mono tracking-wide uppercase text-gray-500 dark:text-gray-400 mt-1">View and manage all employee requests across the organization</p>
         </div>
       </div>
 
-      <div className="bg-white rounded-md border border-border overflow-hidden shadow-sm">
+      <div className="bg-white dark:bg-gray-800 rounded-md border border-border overflow-hidden shadow-sm">
         <DataTable 
           columns={columns} 
           data={requests} 

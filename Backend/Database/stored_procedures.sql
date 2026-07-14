@@ -124,8 +124,8 @@ BEGIN
     LEFT JOIN [dbo].[PreApprovals] ppa ON ptr.[Id] = ppa.[TripRequestId]
     LEFT JOIN [dbo].[Settlements] ps ON ptr.[Id] = ps.[TripRequestId]
     WHERE 
-        (r.[Type] = 'business-travel' AND (ppa.[Status] = 'pending' OR ps.[Status] = 'submitted'))
-        OR (r.[Type] <> 'business-travel' AND r.[Status] = 'pending');
+        (r.[Type] = 'travel' AND (ppa.[Status] = 'pending' OR ps.[Status] = 'submitted'))
+        OR (r.[Type] <> 'travel' AND r.[Status] = 'pending');
         
     SELECT * FROM #FinanceReqs ORDER BY [SubmittedAt] ASC;
     SELECT tr.* FROM [dbo].[TripRequests] tr INNER JOIN #FinanceReqs r ON tr.RequestId = r.Id;
@@ -159,17 +159,17 @@ BEGIN
 
         SUM(CASE 
             WHEN r.[Status] = 'pending' THEN 1 
-            WHEN r.[Type] = 'business-travel' AND pa.[Status] = 'pending' THEN 1
+            WHEN r.[Type] = 'travel' AND pa.[Status] = 'pending' THEN 1
             ELSE 0 
         END) AS [Pending],
 
         SUM(CASE 
             WHEN r.[Status] = 'approved' THEN 1 
-            WHEN r.[Type] = 'business-travel' AND (pa.[Status] = 'approved' OR s.[Status] = 'approved') THEN 1
+            WHEN r.[Type] = 'travel' AND (pa.[Status] = 'approved' OR s.[Status] = 'approved') THEN 1
             ELSE 0 
         END) AS [Approved],
 
-        ISNULL(SUM(CASE WHEN r.[Type] = 'business-travel' AND s.[Status] = 'approved' THEN s.[TotalAmountINR] ELSE 0 END), 0)
+        ISNULL(SUM(CASE WHEN r.[Type] = 'travel' AND s.[Status] = 'approved' THEN s.[TotalAmountINR] ELSE 0 END), 0)
         + ISNULL(SUM(CASE WHEN r.[Type] = 'internet-bill' AND r.[Status] = 'approved' THEN ib.[ClaimableAmount] ELSE 0 END), 0)
         + ISNULL(SUM(CASE WHEN r.[Type] = 'carpooling' AND r.[Status] = 'approved' THEN cg.[MonthlyAmount] ELSE 0 END), 0)
         + ISNULL(SUM(CASE WHEN r.[Type] = 'relocation' AND r.[Status] = 'approved' THEN rr.[TotalAmount] ELSE 0 END), 0)
@@ -192,9 +192,9 @@ BEGIN
     SET NOCOUNT ON;
 
     SELECT
-        SUM(CASE WHEN r.[Type] = 'business-travel' AND pa.[Status] = 'pending' THEN 1 ELSE 0 END) AS [PendingPreApproval],
-        SUM(CASE WHEN r.[Type] = 'business-travel' AND s.[Status] = 'submitted' THEN 1 ELSE 0 END) AS [PendingSettlement],
-        SUM(CASE WHEN r.[Type] <> 'business-travel' AND r.[Status] = 'pending' THEN 1 ELSE 0 END) AS [PendingOther],
+        SUM(CASE WHEN r.[Type] = 'travel' AND pa.[Status] = 'pending' THEN 1 ELSE 0 END) AS [PendingPreApproval],
+        SUM(CASE WHEN r.[Type] = 'travel' AND s.[Status] = 'submitted' THEN 1 ELSE 0 END) AS [PendingSettlement],
+        SUM(CASE WHEN r.[Type] <> 'travel' AND r.[Status] = 'pending' THEN 1 ELSE 0 END) AS [PendingOther],
         
         SUM(CASE WHEN (r.[Status] = 'approved' OR pa.[Status] = 'approved' OR s.[Status] = 'approved') 
             AND YEAR(r.[UpdatedAt]) = YEAR(GETUTCDATE()) AND MONTH(r.[UpdatedAt]) = MONTH(GETUTCDATE()) 

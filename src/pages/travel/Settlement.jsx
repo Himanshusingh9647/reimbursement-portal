@@ -132,12 +132,6 @@ export default function Settlement() {
     }
   };
 
-  if (loading) return <div className="p-6">Loading settlement...</div>;
-  if (!request) return <div className="p-6">Request not found.</div>;
-
-  const isIntl = request.subtype === 'international';
-  const currency = isIntl ? (request.destination === 'Japan' ? 'JPY' : 'USD') : 'INR';
-
   const tripSummary = useMemo(() => {
     if (!request?.dates || !policyRates) return null;
     const days = getDaysBetween(request.dates.startDate, request.dates.endDate);
@@ -152,6 +146,12 @@ export default function Settlement() {
       pdTotal
     };
   }, [request, policyRates]);
+
+  if (loading) return <div className="p-6">Loading settlement...</div>;
+  if (!request) return <div className="p-6">Request not found.</div>;
+
+  const isIntl = request.subtype === 'international';
+  const currency = isIntl ? (request.destination === 'Japan' ? 'JPY' : 'USD') : 'INR';
 
   return (
     <div className="p-6 w-full max-w-none mx-auto flex flex-col gap-6">
@@ -170,9 +170,9 @@ export default function Settlement() {
       <div className="flex flex-col lg:flex-row gap-8 items-start">
         
         {/* Left Column: Form */}
-        <div className="flex-1 min-w-0 xl:col-span-9 bg-white rounded-lg shadow-sm border-t-4 border-samsung-blue border-l border-r border-b border-border">
-          <div className="px-6 md:px-8 py-5 border-b border-border flex justify-between items-center bg-gray-50/50">
-            <h2 className="text-base font-semibold text-gray-900 m-0">Settlement Details</h2>
+        <div className="flex-1 min-w-0 xl:col-span-9 bg-white dark:bg-slate-800 rounded-lg shadow-sm border-t-4 border-samsung-blue border-l border-r border-b border-border dark:border-slate-700">
+          <div className="px-6 md:px-8 py-5 border-b border-border dark:border-slate-700 flex justify-between items-center bg-gray-50/50 dark:bg-slate-800/50">
+            <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 m-0">Settlement Details</h2>
             <span className="text-xs font-mono uppercase tracking-wide text-gray-400">Draft auto-saved</span>
           </div>
 
@@ -181,24 +181,24 @@ export default function Settlement() {
               <form onSubmit={handleNext}>
                 <div className="flex flex-col gap-6">
                   
-                  <div className="border-b border-border pb-6 mb-2">
-                    <h3 className="font-semibold text-gray-900 mb-4">Travel Expenses</h3>
+                  <div className="border-b border-border dark:border-slate-700 pb-6 mb-2">
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Travel Expenses</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <FormField id="hotelName" label="Hotel Name" value={hotelName} onChange={e => setHotelName(e.target.value)} required />
                       <FormField id="hotelCost" label={`Total Hotel Bill (${currency})`} type="number" value={hotelCost} onChange={e => setHotelCost(e.target.value)} required />
                     </div>
                   </div>
 
-                  <div className="border-b border-border pb-6 mb-2">
-                    <h3 className="font-semibold text-gray-900 mb-4">Local Conveyance</h3>
+                  <div className="border-b border-border dark:border-slate-700 pb-6 mb-2">
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Local Conveyance</h3>
                     <div className="flex gap-4 mb-5">
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input type="radio" name="convType" value="cab" checked={conveyanceType === 'cab'} onChange={() => setConveyanceType('cab')} className="text-samsung-blue" />
-                        <span className="text-sm text-gray-900">Cab / Taxi</span>
+                        <span className="text-sm text-gray-900 dark:text-gray-300">Cab / Taxi</span>
                       </label>
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input type="radio" name="convType" value="own_vehicle" checked={conveyanceType === 'own_vehicle'} onChange={() => setConveyanceType('own_vehicle')} className="text-samsung-blue" />
-                        <span className="text-sm text-gray-900">Own Vehicle</span>
+                        <span className="text-sm text-gray-900 dark:text-gray-300">Own Vehicle</span>
                       </label>
                     </div>
                     <div className="max-w-md">
@@ -211,11 +211,11 @@ export default function Settlement() {
                   </div>
 
                   {isIntl && (
-                    <div className="border-b border-border pb-6 mb-2">
-                      <h3 className="font-semibold text-gray-900 mb-4">Winter Clothes Allowance</h3>
-                      <label className="flex items-start gap-3 cursor-pointer p-4 bg-blue-50 border border-blue-100 rounded-md">
+                    <div className="border-b border-border dark:border-slate-700 pb-6 mb-2">
+                      <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Winter Clothes Allowance</h3>
+                      <label className="flex items-start gap-3 cursor-pointer p-4 bg-blue-50 dark:bg-slate-700/50 border border-blue-100 dark:border-slate-600 rounded-md">
                         <input type="checkbox" checked={winterClothesClaimed} onChange={e => setWinterClothesClaimed(e.target.checked)} className="mt-0.5 text-samsung-blue" />
-                        <span className="text-sm text-gray-900 leading-snug">I am claiming the winter clothes allowance (Eligible for 30+ days in Korea. Claim once in 3 years).</span>
+                        <span className="text-sm text-gray-900 dark:text-gray-300 leading-snug">I am claiming the winter clothes allowance (Eligible for 30+ days in Korea. Claim once in 3 years).</span>
                       </label>
                       {winterClothesClaimed && (
                         <div className="mt-5 max-w-md">
@@ -226,7 +226,7 @@ export default function Settlement() {
                   )}
 
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-4">Supporting Documents</h3>
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">Supporting Documents</h3>
                     <div className="grid grid-cols-1 gap-4">
                       <UploadZone id="hotelBill" label="Hotel Bill" accept=".pdf,.png,.jpg" multiple files={hotelBill} onFilesChange={setHotelBill} required />
                       <UploadZone 
@@ -244,7 +244,7 @@ export default function Settlement() {
 
                 </div>
                 
-                <div className="mt-6 pt-6 border-t border-border flex justify-between items-center">
+                <div className="mt-6 pt-6 border-t border-border dark:border-slate-700 flex justify-between items-center">
                   <button type="button" onClick={handleSaveDraft} className="text-samsung-blue hover:text-blue-800 font-medium text-sm focus:outline-none">Save Draft</button>
                   <button type="submit" className="bg-samsung-blue text-white px-6 py-2.5 rounded-md font-medium text-sm hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-samsung-blue">
                     Review Claim & Next
@@ -256,32 +256,32 @@ export default function Settlement() {
             {step === 2 && (
               <div>
                 <div className="flex flex-col gap-4">
-                  <h3 className="font-semibold text-gray-900 border-b border-border pb-2">Review Settlement Details</h3>
-                  <div className="grid grid-cols-2 gap-y-4 text-sm text-gray-700">
-                    <div><strong className="text-gray-900">Hotel ({hotelName}):</strong></div>
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 border-b border-border dark:border-slate-700 pb-2">Review Settlement Details</h3>
+                  <div className="grid grid-cols-2 gap-y-4 text-sm text-gray-700 dark:text-gray-300">
+                    <div><strong className="text-gray-900 dark:text-gray-100">Hotel ({hotelName}):</strong></div>
                     <div>{formatCurrency(Number(hotelCost), currency)}</div>
                     
-                    <div><strong className="text-gray-900">Conveyance:</strong></div>
+                    <div><strong className="text-gray-900 dark:text-gray-100">Conveyance:</strong></div>
                     <div>{conveyanceType === 'cab' ? formatCurrency(Number(conveyanceAmount), currency) : `${ownVehicleKm} km (Own Vehicle)`}</div>
                     
                     {isIntl && winterClothesClaimed && (
                       <>
-                        <div><strong className="text-gray-900">Winter Clothes:</strong></div>
+                        <div><strong className="text-gray-900 dark:text-gray-100">Winter Clothes:</strong></div>
                         <div>{formatCurrency(Number(winterClothesAmount), currency)}</div>
                       </>
                     )}
 
-                    <div><strong className="text-gray-900">Receipts Attached:</strong></div>
+                    <div><strong className="text-gray-900 dark:text-gray-100">Receipts Attached:</strong></div>
                     <div>{hotelBill.length + conveyanceReceipt.length + otherDocument.length} file(s)</div>
                   </div>
                 </div>
 
-                <div className="bg-orange-50 text-orange-700 p-4 rounded-md text-sm mt-6 border border-orange-200">
+                <div className="bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 p-4 rounded-md text-sm mt-6 border border-orange-200 dark:border-orange-800/50">
                   Per diem and hotel caps will be computed automatically by the system upon submission. Once submitted, this claim cannot be edited.
                 </div>
 
-                <div className="mt-6 pt-6 border-t border-border flex justify-between items-center">
-                  <button type="button" onClick={() => setStep(1)} className="text-gray-600 hover:text-gray-900 font-medium text-sm">← Back to Edit</button>
+                <div className="mt-6 pt-6 border-t border-border dark:border-slate-700 flex justify-between items-center">
+                  <button type="button" onClick={() => setStep(1)} className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 font-medium text-sm">← Back to Edit</button>
                   <button onClick={handleSubmit} disabled={submitting} className="bg-samsung-blue text-white px-6 py-2.5 rounded-md font-medium text-sm hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-samsung-blue disabled:opacity-70 disabled:cursor-not-allowed">
                     {submitting ? 'Submitting...' : 'Confirm & Submit'}
                   </button>
@@ -295,61 +295,61 @@ export default function Settlement() {
         <div className="w-full lg:w-[360px] shrink-0 xl:col-span-3 flex flex-col gap-6 sticky top-6">
           
           {tripSummary && (
-            <div className="bg-white p-6 rounded-lg border border-border shadow-sm">
-              <h3 className="text-sm font-semibold mb-4 text-gray-900 border-b border-border pb-2">Trip Summary</h3>
-              <div className="flex flex-col gap-3 text-sm text-gray-700">
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-lg border border-border dark:border-slate-700 shadow-sm">
+              <h3 className="text-sm font-semibold mb-4 text-gray-900 dark:text-gray-100 border-b border-border dark:border-slate-700 pb-2">Trip Summary</h3>
+              <div className="flex flex-col gap-3 text-sm text-gray-700 dark:text-gray-300">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Travel Dates:</span>
-                  <strong className="text-gray-900 text-right">{formatDate(tripSummary.startDate)}<br/>to {formatDate(tripSummary.endDate)}</strong>
+                  <span className="text-gray-500 dark:text-slate-400">Travel Dates:</span>
+                  <strong className="text-gray-900 dark:text-gray-100 text-right">{formatDate(tripSummary.startDate)}<br/>to {formatDate(tripSummary.endDate)}</strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Duration:</span>
-                  <strong className="text-gray-900">{tripSummary.days} days</strong>
+                  <span className="text-gray-500 dark:text-slate-400">Duration:</span>
+                  <strong className="text-gray-900 dark:text-gray-100">{tripSummary.days} days</strong>
                 </div>
-                <div className="flex justify-between items-center mt-2 pt-2 border-t border-gray-100">
-                  <span className="text-gray-500 leading-tight">Per Diem<br/><span className="text-xs">({formatCurrency(tripSummary.perDiemRate, currency)} × {tripSummary.days})</span></span>
+                <div className="flex justify-between items-center mt-2 pt-2 border-t border-gray-100 dark:border-slate-700">
+                  <span className="text-gray-500 dark:text-slate-400 leading-tight">Per Diem<br/><span className="text-xs">({formatCurrency(tripSummary.perDiemRate, currency)} × {tripSummary.days})</span></span>
                   <strong className="font-mono text-samsung-blue font-semibold">{formatCurrency(tripSummary.pdTotal, currency)}</strong>
                 </div>
               </div>
             </div>
           )}
 
-          <div className="bg-gray-50 p-6 rounded-lg border border-border shadow-sm">
-            <h3 className="text-sm font-semibold mb-4 text-gray-900 border-b border-border pb-2">Pre-Approval Reference</h3>
-            <div className="flex flex-col gap-3 text-sm text-gray-700">
+          <div className="bg-gray-50 dark:bg-slate-800/50 p-6 rounded-lg border border-border dark:border-slate-700 shadow-sm">
+            <h3 className="text-sm font-semibold mb-4 text-gray-900 dark:text-gray-100 border-b border-border dark:border-slate-700 pb-2">Pre-Approval Reference</h3>
+            <div className="flex flex-col gap-3 text-sm text-gray-700 dark:text-gray-300">
               <div className="flex justify-between">
-                <span className="text-gray-500">Destination:</span>
-                <strong className="text-gray-900">{request.destination}</strong>
+                <span className="text-gray-500 dark:text-slate-400">Destination:</span>
+                <strong className="text-gray-900 dark:text-gray-100">{request.destination}</strong>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Type:</span>
-                <span className="capitalize font-medium text-gray-900">{request.subtype}</span>
+                <span className="text-gray-500 dark:text-slate-400">Type:</span>
+                <span className="capitalize font-medium text-gray-900 dark:text-gray-100">{request.subtype}</span>
               </div>
               <div className="flex flex-col gap-1 mt-1">
-                <span className="text-gray-500">Dates:</span>
-                <strong className="text-gray-900">{formatDate(request.dates.startDate)} to {formatDate(request.dates.endDate)}</strong>
+                <span className="text-gray-500 dark:text-slate-400">Dates:</span>
+                <strong className="text-gray-900 dark:text-gray-100">{formatDate(request.dates.startDate)} to {formatDate(request.dates.endDate)}</strong>
               </div>
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg border border-border shadow-sm">
-            <h3 className="text-base font-semibold flex items-center gap-2 mb-4 text-gray-900">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-lg border border-border dark:border-slate-700 shadow-sm">
+            <h3 className="text-base font-semibold flex items-center gap-2 mb-4 text-gray-900 dark:text-gray-100">
               <Info size={18} className="text-samsung-blue" /> Policy Reminders
             </h3>
             
-            <ul className="pl-5 list-disc text-gray-600 text-sm flex flex-col gap-3 mb-6 marker:text-samsung-blue">
+            <ul className="pl-5 list-disc text-gray-600 dark:text-gray-400 text-sm flex flex-col gap-3 mb-6 marker:text-samsung-blue">
               <li>Hotel caps strictly apply as per the tier of your destination. Any excess is non-reimbursable.</li>
               <li>Per diem is calculated automatically based on the number of days you stayed.</li>
               <li>You must upload all supporting documents, including boarding passes and GST-compliant invoices.</li>
             </ul>
 
-            <h3 className="text-sm font-semibold flex items-center gap-2 mb-2 text-gray-900 border-t border-gray-100 pt-4">
-              <HelpCircle size={16} className="text-gray-400" /> FAQ
+            <h3 className="text-sm font-semibold flex items-center gap-2 mb-2 text-gray-900 dark:text-gray-100 border-t border-gray-100 dark:border-slate-700 pt-4">
+              <HelpCircle size={16} className="text-gray-400 dark:text-slate-500" /> FAQ
             </h3>
             <div className="flex flex-col gap-3">
               <div>
-                <p className="text-sm font-medium text-gray-800 mb-0.5">Where is the Per Diem input?</p>
-                <p className="text-xs text-gray-600">The system calculates per diem dynamically based on your pre-approval dates and destination. You do not need to input it.</p>
+                <p className="text-sm font-medium text-gray-800 dark:text-gray-200 mb-0.5">Where is the Per Diem input?</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">The system calculates per diem dynamically based on your pre-approval dates and destination. You do not need to input it.</p>
               </div>
             </div>
           </div>

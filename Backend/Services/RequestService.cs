@@ -58,7 +58,7 @@ public class RequestService : IRequestService
         {
             bool isFullyApproved = false;
 
-            if (r.Type == "business-travel")
+            if (r.Type == "travel")
             {
                 var pre = r.TripRequest?.PreApproval?.Status;
                 var stl = r.TripRequest?.Settlement?.Status;
@@ -86,7 +86,7 @@ public class RequestService : IRequestService
 
             if (isFullyApproved)
             {
-                if (r.Type == "business-travel" && r.TripRequest?.Settlement != null)
+                if (r.Type == "travel" && r.TripRequest?.Settlement != null)
                     totalReimbursed += r.TripRequest.Settlement.TotalAmountINR ?? 0;
                 else if (r.Type == "internet-bill" && r.InternetBillRequest != null)
                     totalReimbursed += r.InternetBillRequest.TotalAmount ?? 0;
@@ -126,7 +126,7 @@ public class RequestService : IRequestService
             bool isApproved = false;
             decimal amt = 0;
 
-            if (r.Type == "business-travel" && r.TripRequest?.Settlement != null)
+            if (r.Type == "travel" && r.TripRequest?.Settlement != null)
             {
                 amt = r.TripRequest.Settlement.TotalAmountINR ?? 0;
                 if (r.TripRequest.Settlement.Status == "approved") isApproved = true;
@@ -159,7 +159,7 @@ public class RequestService : IRequestService
 
             bool isActionable = false;
 
-            if (r.Type == "business-travel")
+            if (r.Type == "travel")
             {
                 var trip = r.TripRequest;
                 if (trip != null)

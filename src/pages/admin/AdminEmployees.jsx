@@ -54,7 +54,7 @@ export default function AdminEmployees() {
             checked={!!val} 
             onChange={() => handleToggleFlag(row.ghrId, 'hasFinanceAccess', !!val)}
           />
-          <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-samsung-blue"></div>
+          <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-gray-800 after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-samsung-blue"></div>
         </label>
       </div>
     )},
@@ -67,7 +67,7 @@ export default function AdminEmployees() {
             checked={!!val} 
             onChange={() => handleToggleFlag(row.ghrId, 'hasAdminAccess', !!val)}
           />
-          <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-samsung-blue"></div>
+          <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-gray-800 after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-samsung-blue"></div>
         </label>
       </div>
     )},
@@ -106,8 +106,8 @@ export default function AdminEmployees() {
     <div className="p-6 w-full max-w-none mx-auto flex flex-col gap-6">
       <div className="pb-4 border-b border-border bg-gradient-to-b from-blue-50/30 to-transparent -mx-6 px-6 pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-serif text-2xl font-semibold text-gray-900">Employee Management</h1>
-          <p className="text-sm font-mono tracking-wide uppercase text-gray-500 mt-1">Manage system access and roles</p>
+          <h1 className="font-serif text-2xl font-semibold text-gray-900 dark:text-white">Employee Management</h1>
+          <p className="text-sm font-mono tracking-wide uppercase text-gray-500 dark:text-gray-400 mt-1">Manage system access and roles</p>
         </div>
         <button className="bg-samsung-blue text-white px-4 py-2 rounded-md font-medium text-sm hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-samsung-blue">
           Add Employee
@@ -125,7 +125,7 @@ export default function AdminEmployees() {
         />
       </div>
 
-      <div className="bg-white rounded-md border border-border shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-md border border-border shadow-sm overflow-hidden">
         <DataTable 
           columns={columns} 
           data={filteredEmployees} 

@@ -99,7 +99,7 @@ public class RequestsController : ControllerBase
         var existing = await _requestService.GetRequestByIdAsync(id);
         if (existing == null) return NotFound(new { message = "Request not found." });
 
-        if (existing.Type != "business-travel" || existing.TripRequest?.PreApproval?.Status != "approved")
+        if (existing.Type != "travel" || existing.TripRequest?.PreApproval?.Status != "approved")
         {
             return BadRequest(new { message = "Trip extension can only be requested after pre-approval." });
         }
@@ -124,7 +124,7 @@ public class RequestsController : ControllerBase
         var existing = await _requestService.GetRequestByIdAsync(id);
         if (existing == null) return NotFound();
 
-        if (existing.Type == "business-travel")
+        if (existing.Type == "travel")
         {
             await _requestService.FinanceReviewTravelAsync(id, req.FinanceEmpId, req.PreApprovalStatus, req.SettlementStatus, req.ExtensionStatus, req.DocumentReviewStatus, req.Stage, req.FinanceNote);
         }

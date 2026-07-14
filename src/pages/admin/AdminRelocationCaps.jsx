@@ -46,7 +46,7 @@ export default function AdminRelocationCaps() {
   return (
     <div className="p-6 w-full max-w-none mx-auto flex flex-col gap-6">
       <div className="pb-4 border-b border-border bg-gradient-to-b from-blue-50/30 to-transparent -mx-6 px-6 pt-2 mb-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h1 className="font-serif text-2xl font-semibold text-gray-900">Relocation Caps</h1>
+        <h1 className="font-serif text-2xl font-semibold text-gray-900 dark:text-white">Relocation Caps</h1>
         <button 
           disabled={saving}
           onClick={handleSave}
@@ -56,18 +56,18 @@ export default function AdminRelocationCaps() {
         </button>
       </div>
 
-      <div className="bg-white p-6 md:p-8 rounded-lg shadow-sm border border-border overflow-x-auto">
+      <div className="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-lg shadow-sm border border-border overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead>
             <tr>
-              <th scope="col" className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Component</th>
-              {clLevels.map(cl => <th key={cl} scope="col" className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{cl}</th>)}
+              <th scope="col" className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Component</th>
+              {clLevels.map(cl => <th key={cl} scope="col" className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{cl}</th>)}
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200">
             {components.map(comp => (
               <tr key={comp}>
-                <td className="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{comp}</td>
+                <td className="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{comp}</td>
                 {clLevels.map(cl => (
                   <td key={cl} className="px-3 py-4 whitespace-nowrap">
                     <input 
@@ -78,7 +78,7 @@ export default function AdminRelocationCaps() {
                         newCaps[comp] = { ...newCaps[comp], [cl]: Number(e.target.value) };
                         setCaps(newCaps);
                       }}
-                      className="block w-full min-w-[100px] px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-samsung-blue focus:border-samsung-blue sm:text-sm font-mono text-gray-900"
+                      className="block w-full min-w-[100px] px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-samsung-blue focus:border-samsung-blue sm:text-sm font-mono text-gray-900 dark:text-white"
                     />
                   </td>
                 ))}

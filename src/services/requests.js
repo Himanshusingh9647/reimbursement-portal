@@ -104,15 +104,18 @@ export const extendTrip = async (id, dto) => {
   return post(`/api/requests/${id}/extend-trip`, payload);
 };
 
-export const financeReview = async (id, { action, financeNote, type, stage }) => {
+export const financeReview = async (id, { action, financeNote, type, stage, financeEmpId }) => {
+  // Map UI action names to DB status values
+  const statusValue = action === 'approve' ? 'approved' : action === 'reject' ? 'rejected' : action;
+  
   const payload = {
-    financeEmpId: "admin", // To be filled by backend context ideally
+    financeEmpId: financeEmpId || "EMP001",
     financeNote,
     stage: stage,
-    status: action,
-    preApprovalStatus: stage === 'pre-approval' ? action : null,
-    settlementStatus: stage === 'settlement' ? action : null,
-    extensionStatus: stage === 'extension-pending' ? action : null
+    status: statusValue,
+    preApprovalStatus: stage === 'pre-approval' ? statusValue : null,
+    settlementStatus: stage === 'settlement' ? statusValue : null,
+    extensionStatus: stage === 'extension-pending' ? statusValue : null
   };
   
   await put(`/api/requests/${id}/finance-review`, payload);

@@ -61,12 +61,12 @@ export default function AdminCarpoolConfig() {
   return (
     <div className="p-6 w-full max-w-none mx-auto flex flex-col gap-6">
       <div className="pb-4 border-b border-border bg-gradient-to-b from-blue-50/30 to-transparent -mx-6 px-6 pt-2 mb-2">
-        <h1 className="font-serif text-2xl font-semibold text-gray-900">Carpool Configuration</h1>
+        <h1 className="font-serif text-2xl font-semibold text-gray-900 dark:text-white">Carpool Configuration</h1>
       </div>
 
       <form onSubmit={handleSave} className="flex flex-col gap-6">
-        <div className="bg-white p-6 md:p-8 rounded-lg shadow-sm border border-border">
-          <h2 className="text-lg font-serif font-medium text-gray-900 mb-6 border-b border-border pb-2">Own Vehicle Formula</h2>
+        <div className="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-lg shadow-sm border border-border">
+          <h2 className="text-lg font-serif font-medium text-gray-900 dark:text-white mb-6 border-b border-border pb-2">Own Vehicle Formula</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <FormField 
               id="fuel" 
@@ -85,17 +85,17 @@ export default function AdminCarpoolConfig() {
               required 
             />
           </div>
-          <p className="text-sm text-gray-500 mt-4 italic">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-4 italic">
             Cost calculation: (Distance ÷ Mileage) × Fuel Price
           </p>
         </div>
 
-        <div className="bg-white p-6 md:p-8 rounded-lg shadow-sm border border-border">
-          <h2 className="text-lg font-serif font-medium text-gray-900 mb-6 border-b border-border pb-2">Reimbursement Caps</h2>
+        <div className="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-lg shadow-sm border border-border">
+          <h2 className="text-lg font-serif font-medium text-gray-900 dark:text-white mb-6 border-b border-border pb-2">Reimbursement Caps</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-4">
             <div className="flex flex-col gap-4">
-              <h3 className="text-sm font-semibold text-gray-900">One Way</h3>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">One Way</h3>
               <div className="flex gap-4">
                 <div className="flex-1">
                   <FormField 
@@ -120,7 +120,7 @@ export default function AdminCarpoolConfig() {
             </div>
 
             <div className="flex flex-col gap-4">
-              <h3 className="text-sm font-semibold text-gray-900">Both Ways</h3>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Both Ways</h3>
               <div className="flex gap-4">
                 <div className="flex-1">
                   <FormField 
