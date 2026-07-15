@@ -91,11 +91,22 @@ export default function MyRequests() {
     { key: 'type', label: t('table.type'), render: (val) => val.charAt(0).toUpperCase() + val.slice(1) },
     { key: 'submittedAt', label: t('table.submittedDate'), isNumeric: true, render: (val) => formatDate(val) },
     { 
+      key: 'dates', 
+      label: 'Travel Dates', 
+      render: (_, row) => {
+        if (row.type === 'travel' && row.dates?.startDate && row.dates?.endDate) {
+          return `${formatDate(row.dates.startDate)} - ${formatDate(row.dates.endDate)}`;
+        }
+        return '-';
+      }
+    },
+    { 
       key: 'stage', 
       label: t('table.stage'), 
       render: (val, row) => {
         let status = 'pending';
         if (row.stage === 'draft') status = 'draft';
+        else if (row.extensionStatus === 'pending') status = 'pending';
         else if (row.stage === 'pre-approval' && row.preApprovalStatus === 'approved') status = 'approved';
         else if (row.stage === 'pre-approval' && row.preApprovalStatus === 'rejected') status = 'rejected';
         else if (row.stage === 'settlement' && row.settlementStatus === 'approved') status = 'approved';

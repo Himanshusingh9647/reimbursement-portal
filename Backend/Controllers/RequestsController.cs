@@ -104,6 +104,11 @@ public class RequestsController : ControllerBase
             return BadRequest(new { message = "Trip extension can only be requested after pre-approval." });
         }
 
+        if (dto.RevisedDays == null && dto.RevisedEndDate.HasValue && existing.TripRequest != null && existing.TripRequest.StartDate.HasValue)
+        {
+            dto.RevisedDays = (int)(dto.RevisedEndDate.Value.Date - existing.TripRequest.StartDate.Value.Date).TotalDays + 1;
+        }
+
         await _requestService.SubmitTripExtensionAsync(id, dto);
         return Ok(new { message = "Trip extension submitted successfully.", id });
     }

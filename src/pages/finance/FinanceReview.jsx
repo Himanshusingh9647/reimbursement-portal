@@ -12,6 +12,7 @@ import { Info, CheckCircle, Clock, FileText, Check, AlertCircle, Eye } from 'luc
 // ─── Helper: compute a human-readable stage label ────────────────────────────
 function getStageLabel(request) {
   if (request.type === 'travel') {
+    if (request.extensionStatus === 'pending') return 'Trip Extension Review';
     if (request.stage === 'pre-approval') return 'Pre-Approval Review';
     if (request.stage === 'settlement') return 'Settlement Review';
     return 'Review';
@@ -88,11 +89,12 @@ export default function FinanceReview() {
 
   // ── Determine the pending state (mirrors reference project logic) ──────────
   const isTravel = request.type === 'travel';
+  const isExtensionPending = isTravel && request.extensionStatus === 'pending';
   const isPreApprovalPending = isTravel && request.stage === 'pre-approval' && request.preApprovalStatus === 'pending';
   const isSettlementPending = isTravel && request.stage === 'settlement' && (request.settlementStatus === 'pending' || request.settlementStatus === 'submitted');
   const isOtherPending = !isTravel && (request.settlementStatus === 'pending' || request.settlementStatus === 'submitted');
 
-  const canAction = isPreApprovalPending || isSettlementPending || isOtherPending;
+  const canAction = isPreApprovalPending || isSettlementPending || isOtherPending || isExtensionPending;
 
   // ── Handle approve / reject ───────────────────────────────────────────────
   const handleAction = async (action) => {
@@ -103,7 +105,14 @@ export default function FinanceReview() {
     setNoteErr(false);
     setSubmitting(true);
     try {
-      await financeReview(id, { action, financeNote: note, type: request.type, stage: request.stage, financeEmpId: user.ghrId });
+      await financeReview(id, { 
+        action, 
+        financeNote: note, 
+        type: request.type, 
+        stage: request.stage, 
+        financeEmpId: user.ghrId,
+        isExtension: isExtensionPending 
+      });
       setDone(action);
     } catch (err) {
       setToast({ visible: true, message: err.message, type: 'error' });
@@ -143,6 +152,7 @@ export default function FinanceReview() {
   // ── Derive current status for the badge ──────────────────────────────────
   const currentStatus = (() => {
     if (request.type === 'travel') {
+      if (request.extensionStatus === 'pending') return request.extensionStatus;
       if (request.stage === 'pre-approval') return request.preApprovalStatus;
       return request.settlementStatus;
     }

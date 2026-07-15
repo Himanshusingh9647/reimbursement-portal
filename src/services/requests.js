@@ -97,6 +97,7 @@ export const saveDraftRequest = async (dto) => {
 export const extendTrip = async (id, dto) => {
   const payload = {
     revisedEndDate: dto.endDate,
+    revisedDays: dto.revisedDays,
     reason: dto.reason,
     hasApprovalDocument: !!dto.approvalDoc,
     approvalDocument: dto.approvalDoc ? dto.approvalDoc[0]?.name : null
@@ -104,7 +105,7 @@ export const extendTrip = async (id, dto) => {
   return post(`/api/requests/${id}/extend-trip`, payload);
 };
 
-export const financeReview = async (id, { action, financeNote, type, stage, financeEmpId }) => {
+export const financeReview = async (id, { action, financeNote, type, stage, financeEmpId, isExtension }) => {
   // Map UI action names to DB status values
   const statusValue = action === 'approve' ? 'approved' : action === 'reject' ? 'rejected' : action;
   
@@ -113,9 +114,9 @@ export const financeReview = async (id, { action, financeNote, type, stage, fina
     financeNote,
     stage: stage,
     status: statusValue,
-    preApprovalStatus: stage === 'pre-approval' ? statusValue : null,
+    preApprovalStatus: (stage === 'pre-approval' && !isExtension) ? statusValue : null,
     settlementStatus: stage === 'settlement' ? statusValue : null,
-    extensionStatus: stage === 'extension-pending' ? statusValue : null
+    extensionStatus: isExtension ? statusValue : null
   };
   
   await put(`/api/requests/${id}/finance-review`, payload);

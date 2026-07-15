@@ -32,11 +32,22 @@ export default function FinanceRequests() {
     { key: 'type', label: 'Type', render: (val) => val.charAt(0).toUpperCase() + val.slice(1) },
     { key: 'submittedAt', label: 'Submitted Date', isNumeric: true, render: (val) => formatDate(val) },
     { 
+      key: 'dates', 
+      label: 'Travel Dates', 
+      render: (_, row) => {
+        if (row.type === 'travel' && row.dates?.startDate && row.dates?.endDate) {
+          return `${formatDate(row.dates.startDate)} - ${formatDate(row.dates.endDate)}`;
+        }
+        return '-';
+      }
+    },
+    { 
       key: 'stage', 
       label: 'Stage', 
       render: (val, row) => {
         let status = 'pending';
         if (row.stage === 'pre-approval' && row.preApprovalStatus === 'approved') status = 'approved';
+        if (row.extensionStatus === 'pending') status = 'pending';
         if (row.stage === 'pre-approval' && row.preApprovalStatus === 'rejected') status = 'rejected';
         if (row.stage === 'settlement' && row.settlementStatus === 'approved') status = 'approved';
         if (row.stage === 'settlement' && row.settlementStatus === 'rejected') status = 'rejected';

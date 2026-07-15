@@ -14,6 +14,7 @@ public class FrontendRequestDto
     public string stage { get; set; } = string.Empty;
     public string? preApprovalStatus { get; set; }
     public string? settlementStatus { get; set; }
+    public string? extensionStatus { get; set; }
     
     public object? dates { get; set; }
     public string? purpose { get; set; }
@@ -43,10 +44,14 @@ public class FrontendRequestDto
             f.stage = tr.Stage;
             f.destination = tr.Country != null ? $"{tr.Destination}, {tr.Country}" : tr.Destination;
             f.purpose = tr.Purpose;
-            f.dates = new { startDate = tr.StartDate?.ToString("yyyy-MM-dd"), endDate = tr.EndDate?.ToString("yyyy-MM-dd") };
+            var activeExt = tr.Extensions?.OrderByDescending(e => e.Id).FirstOrDefault();
+            var effectiveEndDate = activeExt?.RevisedEndDate ?? tr.EndDate;
+
+            f.dates = new { startDate = tr.StartDate?.ToString("yyyy-MM-dd"), endDate = effectiveEndDate?.ToString("yyyy-MM-dd") };
 
             f.preApprovalStatus = tr.PreApproval?.Status ?? "pending";
             f.settlementStatus = tr.Settlement != null ? tr.Settlement.Status : null;
+            f.extensionStatus = activeExt?.Status;
 
             f.documents = new
             {
