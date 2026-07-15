@@ -1,8 +1,0 @@
-CREATE OR ALTER PROCEDURE sp_DeleteEmployeeFile
-    @Id UNIQUEIDENTIFIER
-AS
-BEGIN
-    SET NOCOUNT ON;
-    DELETE FROM [dbo].[EmployeeFiles] WHERE [Id] = @Id;
-END;
-GO

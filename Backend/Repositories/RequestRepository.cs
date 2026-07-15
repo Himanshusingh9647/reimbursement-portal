@@ -1,6 +1,5 @@
 using Dapper;
 using System.Data;
-using System.Text.Json;
 using ReimbursementAPI.DTOs.Requests;
 
 using ReimbursementAPI.Interfaces;
@@ -156,54 +155,133 @@ public class RequestRepository : IRequestRepository
     public async Task CreateInternetRequestAsync(RequestDto req, InternetBillRequestDto dto)
     {
         using var conn = _factory.CreateConnection();
-        await conn.ExecuteAsync("sp_CreateInternetRequest", new
+        conn.Open();
+        using var trans = conn.BeginTransaction();
+        try
         {
-            Id = req.Id,
-            EmpId = req.EmpId,
-            Title = req.Title,
-            Provider = dto.Provider,
-            Frequency = dto.Frequency,
-            TotalAmount = dto.TotalAmount,
-            ClaimableAmount = dto.ClaimableAmount,
-            ReimbursedTillMonth = dto.ReimbursedTillMonth,
-            PeriodsJson = JsonSerializer.Serialize(dto.Periods ?? new List<InternetBillPeriodDto>())
-        }, commandType: CommandType.StoredProcedure);
+            var newId = await conn.QuerySingleAsync<int>("sp_CreateInternetRequest", new
+            {
+                Id = req.Id,
+                EmpId = req.EmpId,
+                Title = req.Title,
+                Provider = dto.Provider,
+                Frequency = dto.Frequency,
+                TotalAmount = dto.TotalAmount,
+                ClaimableAmount = dto.ClaimableAmount,
+                ReimbursedTillMonth = dto.ReimbursedTillMonth
+            }, transaction: trans, commandType: CommandType.StoredProcedure);
+
+            if (dto.Periods != null)
+            {
+                foreach (var p in dto.Periods)
+                {
+                    await conn.ExecuteAsync("sp_InsertInternetBillPeriod", new
+                    {
+                        InternetBillRequestId = newId,
+                        PeriodLabel = p.PeriodLabel,
+                        Amount = p.Amount,
+                        HasBillDocument = p.HasBillDocument,
+                        BillDocument = p.BillDocument
+                    }, transaction: trans, commandType: CommandType.StoredProcedure);
+                }
+            }
+            trans.Commit();
+        }
+        catch
+        {
+            trans.Rollback();
+            throw;
+        }
     }
 
     public async Task CreateCarpoolRequestAsync(RequestDto req, CarpoolGroupDto dto)
     {
         using var conn = _factory.CreateConnection();
-        await conn.ExecuteAsync("sp_CreateCarpoolRequest", new
+        conn.Open();
+        using var trans = conn.BeginTransaction();
+        try
         {
-            Id = req.Id,
-            EmpId = req.EmpId,
-            Title = req.Title,
-            VehicleNumber = dto.VehicleNumber,
-            TotalMembers = dto.TotalMembers,
-            MonthlyAmount = dto.MonthlyAmount,
-            ValidFrom = dto.ValidFrom,
-            ValidTill = dto.ValidTill,
-            TapInWindowMinutes = dto.TapInWindowMinutes,
-            TapOutWindowMinutes = dto.TapOutWindowMinutes,
-            MembersJson = JsonSerializer.Serialize(dto.Members ?? new List<CarpoolMemberDto>())
-        }, commandType: CommandType.StoredProcedure);
+            var newId = await conn.QuerySingleAsync<int>("sp_CreateCarpoolRequest", new
+            {
+                Id = req.Id,
+                EmpId = req.EmpId,
+                Title = req.Title,
+                VehicleNumber = dto.VehicleNumber,
+                TotalMembers = dto.TotalMembers,
+                MonthlyAmount = dto.MonthlyAmount,
+                ValidFrom = dto.ValidFrom,
+                ValidTill = dto.ValidTill,
+                TapInWindowMinutes = dto.TapInWindowMinutes,
+                TapOutWindowMinutes = dto.TapOutWindowMinutes
+            }, transaction: trans, commandType: CommandType.StoredProcedure);
+
+            if (dto.Members != null)
+            {
+                foreach (var m in dto.Members)
+                {
+                    await conn.ExecuteAsync("sp_InsertCarpoolMember", new
+                    {
+                        CarpoolGroupId = newId,
+                        EmpId = m.EmpId,
+                        EmployeeType = m.EmployeeType,
+                        PickupAddress = m.PickupAddress,
+                        Latitude = m.Latitude,
+                        Longitude = m.Longitude,
+                        NearestMetroStation = m.NearestMetroStation,
+                        MetroDistanceKm = m.MetroDistanceKm
+                    }, transaction: trans, commandType: CommandType.StoredProcedure);
+                }
+            }
+            trans.Commit();
+        }
+        catch
+        {
+            trans.Rollback();
+            throw;
+        }
     }
 
     public async Task CreateRelocationRequestAsync(RequestDto req, RelocationRequestDto dto)
     {
         using var conn = _factory.CreateConnection();
-        await conn.ExecuteAsync("sp_CreateRelocationRequest", new
+        conn.Open();
+        using var trans = conn.BeginTransaction();
+        try
         {
-            Id = req.Id,
-            EmpId = req.EmpId,
-            Title = req.Title,
-            FromCity = dto.FromCity,
-            ToCity = dto.ToCity,
-            RelocDate = dto.RelocDate,
-            TeamName = dto.TeamName,
-            TotalAmount = dto.TotalAmount,
-            ExpensesJson = JsonSerializer.Serialize(dto.Expenses ?? new List<RelocationExpenseDto>())
-        }, commandType: CommandType.StoredProcedure);
+            var newId = await conn.QuerySingleAsync<int>("sp_CreateRelocationRequest", new
+            {
+                Id = req.Id,
+                EmpId = req.EmpId,
+                Title = req.Title,
+                FromCity = dto.FromCity,
+                ToCity = dto.ToCity,
+                RelocDate = dto.RelocDate,
+                TeamName = dto.TeamName,
+                TotalAmount = dto.TotalAmount
+            }, transaction: trans, commandType: CommandType.StoredProcedure);
+
+            if (dto.Expenses != null)
+            {
+                foreach (var e in dto.Expenses)
+                {
+                    await conn.ExecuteAsync("sp_InsertRelocationExpense", new
+                    {
+                        RelocationRequestId = newId,
+                        Category = e.Category,
+                        Description = e.Description,
+                        Amount = e.Amount,
+                        HasBillDocument = e.HasBillDocument,
+                        BillDocument = e.BillDocument
+                    }, transaction: trans, commandType: CommandType.StoredProcedure);
+                }
+            }
+            trans.Commit();
+        }
+        catch
+        {
+            trans.Rollback();
+            throw;
+        }
     }
 
     public async Task SubmitTripExtensionAsync(string requestId, TripExtensionDto dto)
@@ -223,32 +301,59 @@ public class RequestRepository : IRequestRepository
     public async Task SubmitSettlementAsync(string requestId, SettlementDto dto)
     {
         using var conn = _factory.CreateConnection();
-        await conn.ExecuteAsync("sp_SubmitSettlement", new
+        conn.Open();
+        using var trans = conn.BeginTransaction();
+        try
         {
-            RequestId = requestId,
-            HotelName = dto.HotelName,
-            HotelAmount = dto.HotelAmount,
-            HasHotelBill = dto.HasHotelBill,
-            HotelBill = dto.HotelBill,
-            PerDiemDays = dto.PerDiemDays,
-            PerDiemRate = dto.PerDiemRate,
-            PerDiemAmount = dto.PerDiemAmount,
-            Currency = dto.Currency,
-            ExchangeRate = dto.ExchangeRate,
-            TotalAmountForeign = dto.TotalAmountForeign,
-            TotalAmountINR = dto.TotalAmountINR,
-            HasBoardingPass = dto.HasBoardingPass,
-            BoardingPass = dto.BoardingPass,
-            HasPassportStamps = dto.HasPassportStamps,
-            PassportStamps = dto.PassportStamps,
-            HasTripReport = dto.HasTripReport,
-            TripReport = dto.TripReport,
-            HasForexStatement = dto.HasForexStatement,
-            ForexStatement = dto.ForexStatement,
-            WinterClothes = dto.WinterClothes,
-            WinterClothesAmount = dto.WinterClothesAmount,
-            LocalConveyancesJson = JsonSerializer.Serialize(dto.LocalConveyances ?? new List<LocalConveyanceDto>())
-        }, commandType: CommandType.StoredProcedure);
+            var newId = await conn.QuerySingleAsync<int>("sp_SubmitSettlement", new
+            {
+                RequestId = requestId,
+                HotelName = dto.HotelName,
+                HotelAmount = dto.HotelAmount,
+                HasHotelBill = dto.HasHotelBill,
+                HotelBill = dto.HotelBill,
+                PerDiemDays = dto.PerDiemDays,
+                PerDiemRate = dto.PerDiemRate,
+                PerDiemAmount = dto.PerDiemAmount,
+                Currency = dto.Currency,
+                ExchangeRate = dto.ExchangeRate,
+                TotalAmountForeign = dto.TotalAmountForeign,
+                TotalAmountINR = dto.TotalAmountINR,
+                HasBoardingPass = dto.HasBoardingPass,
+                BoardingPass = dto.BoardingPass,
+                HasPassportStamps = dto.HasPassportStamps,
+                PassportStamps = dto.PassportStamps,
+                HasTripReport = dto.HasTripReport,
+                TripReport = dto.TripReport,
+                HasForexStatement = dto.HasForexStatement,
+                ForexStatement = dto.ForexStatement,
+                WinterClothes = dto.WinterClothes,
+                WinterClothesAmount = dto.WinterClothesAmount
+            }, transaction: trans, commandType: CommandType.StoredProcedure);
+
+            if (dto.LocalConveyances != null)
+            {
+                foreach (var lc in dto.LocalConveyances)
+                {
+                    await conn.ExecuteAsync("sp_InsertLocalConveyance", new
+                    {
+                        SettlementId = newId,
+                        ConveyanceType = lc.ConveyanceType,
+                        Route = lc.Route,
+                        Amount = lc.Amount,
+                        Distance = lc.Distance,
+                        HasBillDocument = lc.HasBillDocument,
+                        BillDocument = lc.BillDocument
+                    }, transaction: trans, commandType: CommandType.StoredProcedure);
+                }
+            }
+            trans.Commit();
+        }
+        catch
+        {
+            trans.Rollback();
+            throw;
+        }
     }
 
     public async Task FinanceReviewTravelAsync(string id, string empId, string? preApprovalStatus, string? settlementStatus, string? extensionStatus, string? documentReviewStatus, string? stage, string? financeNote)
