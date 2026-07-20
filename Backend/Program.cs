@@ -1,75 +1,80 @@
 using ReimbursementAPI.Repositories;
 using ReimbursementAPI.Services;
 using ReimbursementAPI.Interfaces;
+using ReimbursementAPI.DTOs.Auth;
 using Microsoft.Extensions.FileProviders;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// ── Framework Services ──────────────────────────────────────────
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// CORS
+// ── CORS ────────────────────────────────────────────────────────
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder =>
+    options.AddPolicy("AllowAll", policy =>
     {
-        builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader();
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
     });
 });
 
-// AutoMapper
+// ── AutoMapper ──────────────────────────────────────────────────
 builder.Services.AddAutoMapper(typeof(Program));
 
-// Dapper configuration for underscore matching (useful for DBs)
+// ── Dapper Configuration ────────────────────────────────────────
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
-// Configuration toggle for Mock vs Real DB removed
+// ── Knox SSO Configuration ──────────────────────────────────────
+builder.Services.Configure<KnoxSsoSettings>(
+    builder.Configuration.GetSection(KnoxSsoSettings.SectionName));
+
+// ── Database ────────────────────────────────────────────────────
 Console.WriteLine("=== USING REAL MSSQL REPOSITORIES ===");
 builder.Services.AddSingleton<IDbConnectionFactory, SqlConnectionFactory>();
+
+// ── Repositories ────────────────────────────────────────────────
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IRequestRepository, RequestRepository>();
 builder.Services.AddScoped<IMyFilesRepository, MyFilesRepository>();
+builder.Services.AddScoped<IPolicyRepository, PolicyRepository>();
 
-// Services
+// ── Services ────────────────────────────────────────────────────
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IRequestService, RequestService>();
 builder.Services.AddScoped<IMyFilesService, MyFilesService>();
+builder.Services.AddScoped<IPolicyService, PolicyService>();
+builder.Services.AddScoped<IKnoxSsoService, KnoxSsoService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// ── HTTP Pipeline ───────────────────────────────────────────────
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 
 // Serve standard wwwroot files
 app.UseStaticFiles();
 
-// Serve files from configured path (e.g., D:/Reimbursement)
+// Serve files from configured storage path (e.g., D:/Reimbursement)
 var fileStoragePath = builder.Configuration["FileStorage:BasePath"] ?? "D:/Reimbursement";
 try
 {
     if (!Directory.Exists(fileStoragePath))
-    {
         Directory.CreateDirectory(fileStoragePath);
-    }
 }
 catch (DirectoryNotFoundException)
 {
-    // Fallback if the drive (e.g. D:/) does not exist on this machine
     fileStoragePath = Path.Combine(builder.Environment.ContentRootPath, "ReimbursementUploads");
     if (!Directory.Exists(fileStoragePath))
-    {
         Directory.CreateDirectory(fileStoragePath);
-    }
     Console.WriteLine($"WARNING: Configured path not found. Falling back to {fileStoragePath}");
 }
 

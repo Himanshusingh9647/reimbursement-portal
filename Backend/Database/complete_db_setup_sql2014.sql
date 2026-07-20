@@ -15,13 +15,13 @@
 -- ============================================================
 -- 0. CREATE DATABASE
 -- ============================================================
-IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'reimbursment_portal_dev')
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'ReimbursementDB')
 BEGIN
-    CREATE DATABASE [reimbursment_portal_dev];
+    CREATE DATABASE [ReimbursementDB];
 END
 GO
 
-USE [reimbursment_portal_dev];
+USE [ReimbursementDB];
 GO
 
 -- ============================================================

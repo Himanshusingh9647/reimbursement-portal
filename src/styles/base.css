@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -15,13 +16,176 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-gray-800 font-sans antialiased dark:bg-gray-900 dark:text-gray-100;
   }
-  
-  /* Strict enforcement of NO animations/transitions */
-  * {
-    transition: none !important;
-    animation: none !important;
+
+  ::selection {
+    background-color: rgba(20, 40, 160, 0.15);
+    color: inherit;
   }
+
+  /* Focused interactive elements get a consistent ring */
+  :focus-visible {
+    outline: 2px solid var(--color-samsung-blue);
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  /* Smooth transitions for interactive elements */
+  .transition-colors {
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease !important;
+  }
+
+  .transition-all {
+    transition: all 0.2s ease !important;
+  }
+
+  .transition-transform {
+    transition: transform 0.2s ease !important;
+  }
+
+  .transition-opacity {
+    transition: opacity 0.2s ease !important;
+  }
+
+  .transition-shadow {
+    transition: box-shadow 0.2s ease !important;
+  }
+}
+
+/* ── Global smooth transitions ────────────────────────────────── */
+a, button, input, select, textarea,
+[role="button"], [tabindex] {
+  transition: color 0.15s ease,
+              background-color 0.15s ease,
+              border-color 0.15s ease,
+              box-shadow 0.15s ease,
+              opacity 0.15s ease !important;
+}
+
+/* Sidebar collapse transition */
+aside {
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Main content area follows sidebar */
+main {
+  transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Topbar follows sidebar */
+header {
+  transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Card hover lift effect */
+.hover\:shadow-md:hover,
+.hover\:shadow-lg:hover {
+  transform: translateY(-1px);
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+/* ── Toast animation ──────────────────────────────────────────── */
+@keyframes toast-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-slide-out {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.toast-enter {
+  animation: toast-slide-in 0.3s ease forwards !important;
+}
+
+.toast-exit {
+  animation: toast-slide-out 0.3s ease forwards !important;
+}
+
+/* ── Pulse animation for pending badges ───────────────────────── */
+@keyframes subtle-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-subtle-pulse {
+  animation: subtle-pulse 2s ease-in-out infinite !important;
+}
+
+/* ── Loader animation ─────────────────────────────────────────── */
+@keyframes loader-bar {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(0%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-loader-bar {
+  animation: loader-bar 1.5s ease-in-out infinite !important;
+}
+
+/* ── Fade in for page content ─────────────────────────────────── */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease forwards !important;
+}
+
+/* ── Skeleton loading pulse ───────────────────────────────────── */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-pulse {
+  animation: shimmer 1.5s ease-in-out infinite !important;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%) !important;
+  background-size: 200% 100% !important;
+}
+
+.dark .animate-pulse {
+  background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%) !important;
+  background-size: 200% 100% !important;
+}
+
+/* ── Bounce for upload icon ───────────────────────────────────── */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.animate-bounce {
+  animation: bounce 0.6s ease-in-out infinite !important;
+}
+
+/* ── Spin for loaders ─────────────────────────────────────────── */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite !important;
 }

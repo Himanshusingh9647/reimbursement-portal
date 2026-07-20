@@ -54,9 +54,9 @@ export default function Toast({ message, type = 'info', isVisible, onClose }) {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed bottom-4 right-4 z-[9999] toast-enter">
       <div
-        className={`flex items-start gap-3 p-4 border rounded-md ${colorClass} max-w-sm w-full`}
+        className={`flex items-start gap-3 p-4 border rounded-xl ${colorClass} max-w-sm w-full`}
         role={ariaRole}
         aria-live={type === 'error' ? 'assertive' : 'polite'}
         onMouseEnter={handleMouseEnter}

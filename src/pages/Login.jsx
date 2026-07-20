@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import FormField from '../components/shared/FormField';
-import { Moon, Sun, Globe } from 'lucide-react';
+import { Moon, Sun, Globe, AlertCircle } from 'lucide-react';
 
 export default function Login() {
   const [ghrId, setGhrId] = useState('');
@@ -35,39 +35,48 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-6">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900 p-6 relative overflow-hidden animate-fade-in">
+      {/* Animated gradient background blobs */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-samsung-blue/10 dark:bg-blue-600/10 blur-[100px] animate-pulse pointer-events-none" style={{ animationDuration: '4s' }} />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-400/10 dark:bg-blue-400/10 blur-[100px] animate-pulse pointer-events-none" style={{ animationDuration: '5s' }} />
+
       {/* Theme & Language toggles */}
-      <div className="fixed top-4 right-4 flex items-center gap-3 z-50">
+      <div className="fixed top-6 right-6 flex items-center gap-2 z-50 bg-white/50 dark:bg-slate-800/50 backdrop-blur-md p-1.5 rounded-full border border-white/20 dark:border-slate-700/50 shadow-sm">
         <button 
           onClick={toggleTheme} 
-          className="p-2 rounded-md text-gray-500 dark:text-gray-400 hover:text-samsung-blue dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+          className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:text-samsung-blue dark:hover:text-blue-400 hover:bg-white dark:hover:bg-slate-700 transition-all"
           title={theme === 'dark' ? t('common.lightMode') : t('common.darkMode')}
         >
           {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
         </button>
+        <div className="w-px h-4 bg-gray-300 dark:bg-slate-600 mx-1" />
         <button 
           onClick={toggleLanguage} 
-          className="flex items-center gap-1 p-2 rounded-md text-gray-500 dark:text-gray-400 hover:text-samsung-blue dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium text-sm"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-gray-500 dark:text-gray-400 hover:text-samsung-blue dark:hover:text-blue-400 hover:bg-white dark:hover:bg-slate-700 font-medium text-sm transition-all"
           title="Toggle Language"
         >
-          <Globe size={18} />
-          <span className="uppercase">{lang}</span>
+          <Globe size={16} />
+          <span className="uppercase tracking-wide text-xs">{lang}</span>
         </button>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 p-8 rounded-lg border border-border dark:border-gray-700 shadow-md w-full max-w-sm">
-        <div className="text-center mb-8">
-          <h1 className="font-serif text-3xl font-semibold text-samsung-blue mb-1">{t('login.title')}</h1>
-          <p className="font-mono text-[18px] tracking-wide uppercase text-gray-500 dark:text-gray-400">{t('login.subtitle')}</p>
+      <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl p-10 rounded-2xl border border-white/40 dark:border-slate-700 shadow-2xl w-full max-w-[420px] relative z-10">
+        <div className="text-center mb-10">
+          <div className="w-16 h-16 bg-samsung-blue dark:bg-blue-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg rotate-3 transform transition-transform hover:rotate-0">
+            <span className="font-serif text-3xl font-bold">S</span>
+          </div>
+          <h1 className="font-serif text-3xl font-semibold text-gray-900 dark:text-gray-100 mb-2">{t('login.title')}</h1>
+          <p className="font-mono text-sm tracking-widest uppercase text-samsung-blue dark:text-blue-400 font-medium">{t('login.subtitle')}</p>
         </div>
 
         {error && (
-          <div role="alert" className="bg-red-50 dark:bg-red-900/30 text-status-rejected p-3 rounded-md mb-6 text-sm font-medium border border-red-100 dark:border-red-800">
-            {error}
+          <div role="alert" className="bg-red-50 dark:bg-red-900/30 text-status-rejected p-4 rounded-xl mb-6 text-sm font-medium border border-red-100 dark:border-red-800/50 flex items-start gap-3 animate-fade-in">
+            <div className="mt-0.5"><AlertCircle size={16} /></div>
+            <div>{error}</div>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <FormField
             id="ghrId"
             label={t('login.username')}
@@ -76,6 +85,7 @@ export default function Login() {
             onChange={(e) => setGhrId(e.target.value)}
             required
             placeholder="e.g. emp001"
+            className="rounded-xl border-gray-200 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-900/50 focus:bg-white dark:focus:bg-slate-900"
           />
 
           <FormField
@@ -85,14 +95,20 @@ export default function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            className="rounded-xl border-gray-200 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-900/50 focus:bg-white dark:focus:bg-slate-900"
           />
 
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full mt-2 py-2.5 bg-samsung-blue text-white rounded-md text-sm font-medium hover:bg-blue-800 disabled:opacity-70 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-samsung-blue"
+            className="w-full mt-4 py-3.5 bg-samsung-blue text-white rounded-xl text-sm font-semibold hover:bg-blue-800 hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-samsung-blue transition-all flex justify-center items-center gap-2"
           >
-            {isLoading ? t('login.signingIn') : t('login.signIn')}
+            {isLoading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                {t('login.signingIn')}
+              </>
+            ) : t('login.signIn')}
           </button>
         </form>
       </div>

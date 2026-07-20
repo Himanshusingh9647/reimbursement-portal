@@ -1,64 +1,92 @@
 using Microsoft.AspNetCore.Mvc;
+using ReimbursementAPI.DTOs.Policy;
+using ReimbursementAPI.Interfaces;
 
 namespace ReimbursementAPI.Controllers;
 
+/// <summary>
+/// Provides policy data endpoints. All policy data is stored in the database
+/// and can be updated via the PUT endpoints without redeployment.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class PolicyController : ControllerBase
 {
-    // Mock exchange rates — in production this would call a backend service or DB
-    private static readonly Dictionary<string, object> KnownRates = new()
+    private readonly IPolicyService _policyService;
+
+    public PolicyController(IPolicyService policyService)
     {
-        { "Vietnam",     new { Currency = "VND", Rate = 0.0034m } },
-        { "Korea",       new { Currency = "KRW", Rate = 0.062m } },
-        { "Philippines", new { Currency = "PHP", Rate = 1.48m } },
-        { "Japan",       new { Currency = "JPY", Rate = 0.55m } },
-        { "USA",         new { Currency = "USD", Rate = 83.50m } },
-        { "UK",          new { Currency = "GBP", Rate = 105.20m } },
-        { "Singapore",   new { Currency = "SGD", Rate = 61.80m } },
-        { "Germany",     new { Currency = "EUR", Rate = 91.50m } },
-        { "Australia",   new { Currency = "AUD", Rate = 54.30m } },
-        { "Canada",      new { Currency = "CAD", Rate = 61.20m } },
-    };
+        _policyService = policyService;
+    }
+
+    // ── Generic Policy CRUD ────────────────────────────────────────
+
+    /// <summary>Returns all policy data records.</summary>
+    [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<PolicyDataDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllPolicies()
+    {
+        var policies = await _policyService.GetAllPoliciesAsync();
+        return Ok(policies);
+    }
+
+    /// <summary>Returns a single policy data record by category key.</summary>
+    [HttpGet("{category}")]
+    [ProducesResponseType(typeof(PolicyDataDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetPolicyByCategory(string category)
+    {
+        var policy = await _policyService.GetPolicyByCategoryAsync(category);
+        if (policy == null)
+            return NotFound(new { message = $"Policy category '{category}' not found." });
+        return Ok(policy);
+    }
+
+    /// <summary>Creates or updates a policy data record for the given category.</summary>
+    [HttpPut("{category}")]
+    [ProducesResponseType(typeof(PolicyDataDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpsertPolicy(string category, [FromBody] UpsertPolicyDataDto dto)
+    {
+        var result = await _policyService.UpsertPolicyAsync(category, dto.JsonData, dto.UpdatedBy);
+        return Ok(result);
+    }
+
+    // ── Convenience Endpoints (backward-compatible) ────────────────
 
     /// <summary>
     /// GET /api/policy/exchange-rate/{country}
-    /// Returns { currency: "KRW", rate: 0.062 } for known countries.
-    /// Falls back to USD for unknown countries (simulates backend fetch).
+    /// Returns { currency, rate } for the given country from the database.
+    /// Falls back to USD for unknown countries.
     /// </summary>
     [HttpGet("exchange-rate/{country}")]
-    public IActionResult GetExchangeRate(string country)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetExchangeRate(string country)
     {
-        if (KnownRates.TryGetValue(country, out var rate))
-            return Ok(rate);
-
-        // Fallback for unknown countries — mock a backend lookup
-        return Ok(new { Currency = "USD", Rate = 83.50m });
+        var rate = await _policyService.GetExchangeRateAsync(country);
+        return Ok(rate);
     }
 
     /// <summary>
     /// GET /api/policy/domestic-states
-    /// Returns the domestic state-to-area mapping.
+    /// Returns the domestic state-to-area mapping from the database.
     /// </summary>
     [HttpGet("domestic-states")]
-    public IActionResult GetDomesticStates()
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetDomesticStates()
     {
-        var states = new Dictionary<string, string>
-        {
-            { "Maharashtra", "Area A" }, { "Delhi", "Area A" }, { "Karnataka", "Area A" }, { "Tamil Nadu", "Area A" },
-            { "Telangana", "Area B" }, { "Gujarat", "Area B" }, { "West Bengal", "Area B" },
-            { "Other", "Area C" }
-        };
+        var states = await _policyService.GetDomesticStatesAsync();
         return Ok(states);
     }
 
     /// <summary>
     /// GET /api/policy/international-countries
-    /// Returns the list of standard international destinations.
+    /// Returns the list of standard international destinations from the database.
     /// </summary>
     [HttpGet("international-countries")]
-    public IActionResult GetInternationalCountries()
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetInternationalCountries()
     {
-        return Ok(new[] { "Vietnam", "Korea", "Philippines", "Other" });
+        var countries = await _policyService.GetInternationalCountriesAsync();
+        return Ok(countries);
     }
 }

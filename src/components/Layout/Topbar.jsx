@@ -15,7 +15,7 @@ export default function Topbar({
 
   return (
     <header 
-      className={`fixed top-0 right-0 h-14 bg-white dark:bg-gray-800 border-b border-border dark:border-gray-700 flex items-center justify-between px-6 z-10 ${
+      className={`fixed top-0 right-0 h-14 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border-b border-border dark:border-slate-700 flex items-center justify-between px-6 z-10 transition-all ${
         isCollapsed ? 'left-[72px]' : 'left-[260px]'
       }`}
     >

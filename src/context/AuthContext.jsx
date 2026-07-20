@@ -4,6 +4,10 @@ import { login as authServiceLogin, logout as authServiceLogout } from '../servi
 
 const AuthContext = createContext(null);
 
+// Use the same keys as auth.js service to avoid session loss on reload
+const SESSION_USER_KEY = 'sem_currentUser';
+const SESSION_TOKEN_KEY = 'sem_authToken';
+
 /**
  * AuthProvider — Manages user authentication state and proxy view.
  *
@@ -20,7 +24,7 @@ export function AuthProvider({ children }) {
   // Initialize from sessionStorage if available
   const [user, setUser] = useState(() => {
     try {
-      const stored = sessionStorage.getItem('sem_user');
+      const stored = sessionStorage.getItem(SESSION_USER_KEY);
       return stored ? JSON.parse(stored) : null;
     } catch {
       return null;
@@ -28,7 +32,7 @@ export function AuthProvider({ children }) {
   });
 
   const [token, setToken] = useState(() => {
-    return sessionStorage.getItem('sem_token') || null;
+    return sessionStorage.getItem(SESSION_TOKEN_KEY) || null;
   });
 
   const login = useCallback(
@@ -38,8 +42,8 @@ export function AuthProvider({ children }) {
 
         setUser(employee);
         setToken(newToken);
-        sessionStorage.setItem('sem_user', JSON.stringify(employee));
-        sessionStorage.setItem('sem_token', newToken);
+        sessionStorage.setItem(SESSION_USER_KEY, JSON.stringify(employee));
+        sessionStorage.setItem(SESSION_TOKEN_KEY, newToken);
 
         // Navigate to base dashboard
         navigate('/dashboard');
@@ -50,9 +54,6 @@ export function AuthProvider({ children }) {
     [navigate]
   );
 
-
-
-
   const logout = useCallback(async () => {
     try {
       await authServiceLogout();
@@ -62,8 +63,8 @@ export function AuthProvider({ children }) {
 
     setUser(null);
     setToken(null);
-    sessionStorage.removeItem('sem_user');
-    sessionStorage.removeItem('sem_token');
+    sessionStorage.removeItem(SESSION_USER_KEY);
+    sessionStorage.removeItem(SESSION_TOKEN_KEY);
     navigate('/login');
   }, [navigate]);
 
